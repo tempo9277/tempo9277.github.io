@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jcap Digital Archive Tool</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-sub: #6c757d;
+            --border-color: #dee2e6;
+            --shadow: 0 8px 30px rgba(0,0,0,0.07);
+            --danger-color: #dc3545;
+            --danger-hover: #bd2130;
+            --success-color: #28a745;
+            --success-hover: #218838;
+            --info-color: #17a2b8;
+            --info-hover: #138496;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Tabs Navigation */
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .tab-btn {
+            background-color: #e4e6eb;
+            color: var(--text-main);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: var(--shadow); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        /* Import Section Box */
+        .import-box {
+            background: #f4f6f9;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .import-box-info {
+            flex: 1;
+            min-width: 250px;
+        }
+        .import-box-title {
+            font-weight: 700;
+            margin: 0 0 4px 0;
+            font-size: 15px;
+        }
+        .import-box-desc {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin: 0;
+        }
+        .btn-import {
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        .btn-import:hover {
+            background-color: var(--success-hover);
+        }
+
+        /* Upload Area styling */
+        .upload-area {
+            position: relative; border: 2px dashed var(--primary-color); border-radius: 15px;
+            padding: 40px 20px; text-align: center; background-color: #fbfdff;
+            transition: all 0.3s ease; margin-bottom: 25px; overflow: hidden; width: 100%; cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            background-color: #f0f8ff; border-color: var(--primary-hover);
+            transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,123,255,0.1);
+        }
+
+        .upload-icon { font-size: 48px; margin-bottom: 15px; }
+        .upload-text { color: var(--text-sub); font-weight: 500; }
+        .file-input-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+
+        /* Form elements */
+        .password-group { width: 100%; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        input[type="password"], input[type="text"] {
+            padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px;
+            width: 100%; box-sizing: border-box; font-size: 16px; transition: border-color 0.2s;
+        }
+        input[type="password"]:focus, input[type="text"]:focus { border-color: var(--primary-color); outline: none; }
+
+        .btn-run {
+            background-color: var(--primary-color); color: white; border: none; padding: 15px 30px;
+            border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 16px; width: 100%;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn-run:hover { background-color: var(--primary-hover); }
+        .btn-run:active { transform: scale(0.98); }
+
+        .status-msg { text-align: center; font-size: 0.9em; margin-top: 15px; color: dimgray; }
+
+        /* Media list in Encryption */
+        .media-list {
+            margin: 15px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px;
+            background: #fafafa;
+        }
+        .media-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+        }
+        .media-item-row:last-child { border-bottom: none; }
+        .media-item-name {
+            font-size: 14px;
+            word-break: break-all;
+            margin-right: 10px;
+        }
+        .btn-delete {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-delete:hover { background: var(--danger-hover); }
+
+        .btn-download {
+            background: var(--info-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+        .btn-download:hover { background: var(--info-hover); }
+
+        /* Metadata management style */
+        .meta-editor-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .meta-editor-row input { flex: 1; }
+        .btn-add-meta {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .btn-add-meta:hover { background-color: #5a6268; }
+
+        /* Decrypt / Display Section Layout */
+        #display-section h2 {
+            font-size: 32px; font-weight: 800; margin-top: 0; margin-bottom: 30px;
+            border-bottom: 2px solid #f1f3f5; padding-bottom: 15px;
+        }
+
+        .content-layout { display: flex; flex-direction: column; gap: 30px; }
+        @media (min-width: 768px) { .content-layout { flex-direction: row; } }
+
+        .meta-column { flex: 1; }
+        .media-column { flex: 1.5; display: flex; flex-direction: column; align-items: center; }
+
+        .meta-data { background: #fbfdff; padding: 25px; border-radius: 15px; border: 1px solid #eef2f5; }
+        .meta-data p { margin: 12px 0; border-bottom: 1px solid #f8f9fa; padding-bottom: 12px; }
+        .meta-data p:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .meta-data strong { color: var(--text-main); font-weight: 600; display: inline-block; min-width: 80px; margin-right: 10px; }
+        .meta-data span { color: #555; word-break: break-all; }
+
+        #carousel-area { position: relative; width: 100%; display: none; }
+
+        .media-wrapper {
+            display: none; width: 100%; height: 450px; border-radius: 15px;
+            overflow: hidden; background-color: #000; position: relative;
+        }
+        .media-wrapper.active { display: block; }
+        .media-wrapper img, .media-wrapper video {
+            width: 100%; height: 100%; display: block; margin: 0; object-fit: contain;
+        }
+
+        .nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.4);
+            color: white; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 18px;
+            cursor: pointer; z-index: 20; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s; backdrop-filter: blur(2px);
+        }
+        .nav-btn:hover { background: rgba(0, 0, 0, 0.7); }
+        #prevBtn { left: 15px; }
+        #nextBtn { right: 15px; }
+
+        #carousel-indicator { text-align: center; margin-top: 15px; color: var(--text-sub); font-weight: 500; display: none; }
+        
+        #btn-download-active {
+            display: none;
+            margin: 15px auto 0 auto;
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+        .motion-icon {
+            position: absolute; top: 15px; left: 15px; background: rgba(0, 0, 0, 0.5); color: white;
+            padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            display: flex; align-items: center; gap: 6px; z-index: 10; pointer-events: none; backdrop-filter: blur(5px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Tab Switchers -->
+    <div class="tabs-container">
+        <button id="tab-decrypt-btn" class="tab-btn active" onclick="switchTab('decrypt')">🔓 Decrypt Archive</button>
+        <button id="tab-encrypt-btn" class="tab-btn" onclick="switchTab('encrypt')">🔒 Encrypt & Package</button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- DECRYPT SECTION                            -->
+    <!-- ========================================== -->
+    <div id="decrypt-tab" class="tab-content">
+        <div class="card" id="upload-section">
+            <h2>Decode JCAP Capsule</h2>
+            <div class="upload-area" id="dropZone">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text" id="fileNameDisplay">Click to select or drag .jcap file here</div>
+                <input type="file" id="fileInput" accept=".jcap" class="file-input-overlay">
+            </div>
+            <div class="password-group">
+                <label for="passwordInput">Secret Password:</label>
+                <input type="password" id="passwordInput" placeholder="••••••••••••">
+            </div>
+            <button class="btn-run" onclick="decryptAndRender()">🚀 Decrypt and Render</button>
+            <p id="statusMsg" class="status-msg"></p>
+        </div>
+
+        <div class="card hidden" id="display-section">
+            <h2 id="display-location"></h2>
+            <div class="content-layout">
+                <div class="meta-column">
+                    <div class="meta-data" id="dynamic-meta-container"></div>
+                </div>
+                <div class="media-column">
+                    <div id="carousel-area">
+                        <button id="prevBtn" class="nav-btn">◀</button>
+                        <div id="media-container"></div>
+                        <button id="nextBtn" class="nav-btn">▶</button>
+                    </div>
+                    <div id="carousel-indicator"></div>
+                    <!-- 檢視解密內容時的單檔下載按鈕 -->
+                    <button id="btn-download-active" class="btn-download">💾 Download Current File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- ENCRYPT SECTION                            -->
+    <!-- ========================================== -->
+    <div id="encrypt-tab" class="tab-content hidden">
+        <div class="card">
+            <h2>Create / Edit JCAP Capsule</h2>
+            
+            <!-- 0. Import Existing Capsule -->
+            <div class="import-box">
+                <div class="import-box-info">
+                    <p class="import-box-title">Want to modify an existing capsule?</p>
+                    <p class="import-box-desc">Load an existing .jcap file to auto-fill metadata and media files below for editing.</p>
+                </div>
+                <button type="button" class="btn-import" onclick="triggerImportLoad()">📂 Load Existing .jcap</button>
+                <input type="file" id="importFileInput" accept=".jcap" class="hidden" onchange="importExistingJcap(event)">
+            </div>
+
+            <!-- 1. Media Manager -->
+            <fieldset style="border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <legend style="padding: 0 10px; font-weight: 700;">1. Media Manager (Photos/Videos/Audio)</legend>
+                <div class="upload-area" id="encDropZone" style="padding: 20px 10px; margin-bottom: 15px;">
+                    <div class="upload-icon" style="font-size: 32px; margin-bottom: 5px;">➕</div>
+                    <div class="upload-text" id="encFileNameDisplay">Click or Drag files to add to staging</div>
+                    <input type="file" id="encFileInput" multiple accept=".jpg,.jpeg,.png,.webp,.heic,.heif,.gif,.mp4,.mov,.mp3,.wav" class="file-input-overlay">
+                </div>
+                <div class="media-list id-media-list hidden" id="staged-media-container"></div>
+            </fieldset>
+
+            <!-- 2. Metadata Manager -->
+            <fieldset style="border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                <legend style="padding: 0 10px; font-weight: 700;">2. Metadata (Custom Fields)</legend>
+                <div id="metadata-fields-container">
+                    <!-- Default fields inserted via Javascript -->
+                </div>
+                <button type="button" class="btn-add-meta" onclick="addMetadataField('', '')">➕ Add Custom Field</button>
+            </fieldset>
+
+            <!-- 3. Security Settings -->
+            <fieldset style="border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+                <legend style="padding: 0 10px; font-weight: 700;">3. Encryption Settings</legend>
+                <div class="password-group" style="margin-bottom: 0;">
+                    <label for="encPasswordInput">Encryption Password:</label>
+                    <input type="password" id="encPasswordInput" placeholder="Set password for encryption">
+                </div>
+            </fieldset>
+
+            <button class="btn-run" onclick="processAndEncrypt()">🚀 Save as New Encrypted Capsule</button>
+            <p id="encStatusMsg" class="status-msg"></p>
+        </div>
+    </div>
+
+    <script>
+        // --- 全域變數定義 ---
+        let currentStagedFiles = []; // 暫存區資料結構: [{"name": str, "data": Uint8Array}]
+        let activeDecryptedItems = []; // 檢視區資料結構: [{"name": str, "blob": Blob}] (供輪播器下載使用)
+
+        // --- 共享輔助函式 ---
+        function getMimeType(fileName) {
+            const ext = fileName.split('.').pop().toLowerCase();
+            const map = {
+                'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'webp': 'image/webp',
+                'mp4': 'video/mp4', 'mov': 'video/quicktime',
+                'mp3': 'audio/mpeg', 'wav': 'audio/wav'
+            };
+            return map[ext] || '';
+        }
+
+        // --- 分頁切換邏輯 ---
+        function switchTab(mode) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+            if (mode === 'decrypt') {
+                document.getElementById('tab-decrypt-btn').classList.add('active');
+                document.getElementById('decrypt-tab').classList.remove('hidden');
+            } else {
+                document.getElementById('tab-encrypt-btn').classList.add('active');
+                document.getElementById('encrypt-tab').classList.remove('hidden');
+            }
+        }
+
+        // ========================================================
+        // DECRYPTION CORE (解密與瀏覽檢視)
+        // ========================================================
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault(); dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) { fileInput.files = e.dataTransfer.files; updateFileName(); }
+        });
+        fileInput.addEventListener('change', updateFileName);
+
+        function updateFileName() {
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = `Selected: ${fileInput.files[0].name}`;
+                fileNameDisplay.style.color = '#007bff';
+            }
+        }
+
+        function setStatus(msg, isError = false) {
+            const statusEl = document.getElementById('statusMsg');
+            statusEl.textContent = msg; statusEl.style.color = isError ? 'red' : 'dimgray';
+        }
+
+        async function decryptAndRender() {
+            const fileInput = document.getElementById('fileInput');
+            const passwordInput = document.getElementById('passwordInput').value;
+
+            if (fileInput.files.length === 0 || !passwordInput) {
+                setStatus("Please select a file and enter a password", true); return;
+            }
+
+            try {
+                setStatus("Reading file...");
+                const file = fileInput.files[0];
+                const arrayBuffer = await file.arrayBuffer();
+
+                const salt = arrayBuffer.slice(0, 16);
+                const nonce = arrayBuffer.slice(16, 28);
+                const ciphertext = arrayBuffer.slice(28);
+
+                setStatus("Calculating decryption key...");
+                const enc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey(
+                    "raw", enc.encode(passwordInput), { name: "PBKDF2" }, false, ["deriveKey"]
+                );
+                const aesKey = await crypto.subtle.deriveKey(
+                    { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                    keyMaterial, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
+                );
+
+                setStatus("Decrypting...");
+                const decryptedBuffer = await crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: nonce }, aesKey, ciphertext
+                );
+
+                setStatus("Unzipping...");
+                const zip = await JSZip.loadAsync(decryptedBuffer);
+                const metaText = await zip.file("metadata.json").async("string");
+                const metadata = JSON.parse(metaText);
+
+                const mediaContainer = document.getElementById('media-container');
+                mediaContainer.innerHTML = ''; 
+                const mediaItems = metadata.media || [];
+                let mediaWrappers = []; 
+                let currentIndex = 0;   
+                
+                // 重置輪播下載暫存區
+                activeDecryptedItems = [];
+
+                for (const item of mediaItems) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'media-wrapper'; 
+                    
+                    if (item.type === 'motion_photo') {
+                        const imgBlob = await zip.file(item.image).async("blob");
+                        const vidBlob = await zip.file(item.video).async("blob");
+                        const imgEl = document.createElement('img'); imgEl.src = URL.createObjectURL(imgBlob);
+                        const vidEl = document.createElement('video');
+                        vidEl.src = URL.createObjectURL(new Blob([vidBlob], { type: 'video/mp4' }));
+                        vidEl.controls = true; vidEl.classList.add('hidden');
+                        const iconEl = document.createElement('div'); iconEl.className = 'motion-icon'; iconEl.innerHTML = '▶ 動態照片';
+                        
+                        wrapper.style.cursor = 'pointer';
+                        wrapper.appendChild(imgEl); wrapper.appendChild(vidEl); wrapper.appendChild(iconEl);
+                        wrapper.addEventListener('click', () => {
+                            if (vidEl.classList.contains('hidden')) {
+                                imgEl.classList.add('hidden'); iconEl.classList.add('hidden');
+                                vidEl.classList.remove('hidden'); wrapper.style.cursor = 'default'; vidEl.play();
+                            }
+                        });
+
+                        // 供檢視下載使用：將圖片和影片拼接為單一相片檔案（保留動態相片屬性）
+                        const imgUint8 = await zip.file(item.image).async("uint8array");
+                        const vidUint8 = await zip.file(item.video).async("uint8array");
+                        const combined = new Uint8Array(imgUint8.length + vidUint8.length);
+                        combined.set(imgUint8, 0);
+                        combined.set(vidUint8, imgUint8.length);
+                        activeDecryptedItems.push({
+                            name: item.image,
+                            blob: new Blob([combined], { type: 'image/jpeg' })
+                        });
+
+                    } else if (item.type === 'image') {
+                        const imgBlob = await zip.file(item.image).async("blob");
+                        const imgEl = document.createElement('img'); 
+                        imgEl.src = URL.createObjectURL(imgBlob);
+                        wrapper.appendChild(imgEl);
+
+                        activeDecryptedItems.push({ name: item.image, blob: imgBlob });
+
+                    } else if (item.type === 'video') {
+                        const vidBlob = await zip.file(item.video).async("blob");
+                        const mimeType = getMimeType(item.video);
+                        const vidEl = document.createElement('video');
+                        vidEl.src = URL.createObjectURL(new Blob([vidBlob], { type: mimeType }));
+                        vidEl.controls = true; 
+                        wrapper.appendChild(vidEl);
+
+                        activeDecryptedItems.push({ name: item.video, blob: vidBlob });
+
+                    } else if (item.type === 'audio') {
+                        const audBlob = await zip.file(item.audio).async("blob");
+                        const mimeType = getMimeType(item.audio);
+                        
+                        const placeholder = document.createElement('div');
+                        placeholder.style.width = '100%'; placeholder.style.height = '100%';
+                        placeholder.style.display = 'flex'; placeholder.style.alignItems = 'center';
+                        placeholder.style.justifyContent = 'center'; placeholder.style.fontSize = '100px';
+                        placeholder.style.backgroundColor = '#1a1a1a'; placeholder.innerHTML = '🎵';
+                        
+                        const audEl = document.createElement('audio');
+                        audEl.src = URL.createObjectURL(new Blob([audBlob], { type: mimeType }));
+                        audEl.controls = true;
+                        
+                        audEl.style.position = 'absolute'; audEl.style.top = '70%';
+                        audEl.style.left = '50%'; audEl.style.transform = 'translate(-50%, -50%)';
+                        audEl.style.width = '80%';
+                        
+                        wrapper.appendChild(placeholder); wrapper.appendChild(audEl);
+
+                        activeDecryptedItems.push({ name: item.audio, blob: audBlob });
+                    }
+                    mediaWrappers.push(wrapper); mediaContainer.appendChild(wrapper);
+                }
+
+                const carouselArea = document.getElementById('carousel-area');
+                const indicator = document.getElementById('carousel-indicator');
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                const downloadActiveBtn = document.getElementById('btn-download-active');
+
+                function showMedia(index) {
+                    if (mediaWrappers.length === 0) return;
+                    currentIndex = (index + mediaWrappers.length) % mediaWrappers.length;
+                    mediaWrappers.forEach(w => {
+                        w.classList.remove('active');
+                        const video = w.querySelector('video'); if (video) video.pause();
+                        const audio = w.querySelector('audio'); if (audio) audio.pause();
+                    });
+                    mediaWrappers[currentIndex].classList.add('active');
+                    indicator.textContent = `${currentIndex + 1} / ${mediaWrappers.length}`;
+                }
+
+                if (mediaWrappers.length > 0) {
+                    carouselArea.style.display = 'block'; indicator.style.display = 'block';
+                    downloadActiveBtn.style.display = 'block'; // 顯示下載按鈕
+                    prevBtn.style.display = mediaWrappers.length > 1 ? 'flex' : 'none';
+                    nextBtn.style.display = mediaWrappers.length > 1 ? 'flex' : 'none';
+                    showMedia(0);
+                }
+
+                prevBtn.onclick = () => showMedia(currentIndex - 1);
+                nextBtn.onclick = () => showMedia(currentIndex + 1);
+
+                // 檢視頁面的下載處理
+                downloadActiveBtn.onclick = () => {
+                    const activeItem = activeDecryptedItems[currentIndex];
+                    if (activeItem) {
+                        const url = URL.createObjectURL(activeItem.blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = activeItem.name;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    }
+                };
+
+                const metaContainer = document.getElementById('dynamic-meta-container');
+                metaContainer.innerHTML = ''; 
+                let infoData = metadata.info || {};
+                
+                const mainTitle = infoData['Title'] || "Memory Capsule";
+                document.getElementById('display-location').textContent = mainTitle;
+
+                for (const [key, value] of Object.entries(infoData)) {
+                    const pTag = document.createElement('p');
+                    pTag.innerHTML = `<strong>${key}：</strong><span>${value}</span>`;
+                    metaContainer.appendChild(pTag);
+                }
+
+                document.getElementById('upload-section').classList.add('hidden');
+                document.getElementById('display-section').classList.remove('hidden');
+
+            } catch (error) { 
+                console.error(error); 
+                setStatus("Decryption failed! Please check your password.", true); 
+            }
+        }
+
+
+        // ========================================================
+        // ENCRYPTION CORE (加密與編輯、暫存清單管理)
+        // ========================================================
+        const encDropZone = document.getElementById('encDropZone');
+        const encFileInput = document.getElementById('encFileInput');
+        const stagedMediaContainer = document.getElementById('staged-media-container');
+
+        encDropZone.addEventListener('dragover', (e) => { e.preventDefault(); encDropZone.classList.add('dragover'); });
+        encDropZone.addEventListener('dragleave', () => { encDropZone.classList.remove('dragover'); });
+        encDropZone.addEventListener('drop', async (e) => {
+            e.preventDefault(); encDropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                await stageFiles(e.dataTransfer.files);
+            }
+        });
+        encFileInput.addEventListener('change', async () => {
+            if (encFileInput.files.length > 0) {
+                await stageFiles(encFileInput.files);
+            }
+        });
+
+        // 讀取檔案二進位資訊並加入快取
+        async function stageFiles(files) {
+            for (let file of files) {
+                const buffer = await file.arrayBuffer();
+                const uint8Array = new Uint8Array(buffer);
+                currentStagedFiles.push({
+                    name: file.name,
+                    data: uint8Array
+                });
+            }
+            refreshStagedMediaList();
+        }
+
+        // 刷新暫存區媒體檔案列表 (含下載按鈕與刪除按鈕)
+        function refreshStagedMediaList() {
+            if (currentStagedFiles.length === 0) {
+                stagedMediaContainer.classList.add('hidden');
+                stagedMediaContainer.innerHTML = '';
+                return;
+            }
+
+            stagedMediaContainer.classList.remove('hidden');
+            stagedMediaContainer.innerHTML = '';
+
+            currentStagedFiles.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'media-item-row';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'media-item-name';
+                nameSpan.textContent = `[${index + 1}] ${item.name}`;
+
+                // 按鈕控制區
+                const actionGroup = document.createElement('div');
+                actionGroup.style.display = 'flex';
+                actionGroup.style.gap = '8px';
+
+                // 下載按鈕 (💾)
+                const btnDownload = document.createElement('button');
+                btnDownload.className = 'btn-download';
+                btnDownload.textContent = '💾';
+                btnDownload.title = 'Download this file';
+                btnDownload.onclick = () => downloadStagedItem(index);
+
+                // 刪除按鈕 (❌)
+                const btnDelete = document.createElement('button');
+                btnDelete.className = 'btn-delete';
+                btnDelete.textContent = '❌';
+                btnDelete.title = 'Remove';
+                btnDelete.onclick = () => removeStagedItem(index);
+
+                actionGroup.appendChild(btnDownload);
+                actionGroup.appendChild(btnDelete);
+
+                row.appendChild(nameSpan);
+                row.appendChild(actionGroup);
+                stagedMediaContainer.appendChild(row);
+            });
+        }
+
+        // 下載暫存檔案執行邏輯
+        function downloadStagedItem(index) {
+            const item = currentStagedFiles[index];
+            if (!item) return;
+
+            const mimeType = getMimeType(item.name) || 'application/octet-stream';
+            const blob = new Blob([item.data], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = item.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function removeStagedItem(index) {
+            currentStagedFiles.splice(index, 1);
+            refreshStagedMediaList();
+        }
+
+        // --- Metadata 控制項 ---
+        const metaFieldsContainer = document.getElementById('metadata-fields-container');
+        
+        function addMetadataField(key = "", val = "") {
+            const row = document.createElement('div');
+            row.className = 'meta-editor-row';
+
+            const keyInput = document.createElement('input');
+            keyInput.type = 'text';
+            keyInput.placeholder = '欄位名稱 (Key)';
+            keyInput.value = key;
+            keyInput.style.maxWidth = '150px';
+
+            const valInput = document.createElement('input');
+            valInput.type = 'text';
+            valInput.placeholder = '內容值 (Value)';
+            valInput.value = val;
+
+            const btnRemove = document.createElement('button');
+            btnRemove.className = 'btn-delete';
+            btnRemove.style.padding = '10px 15px';
+            btnRemove.textContent = '❌';
+            btnRemove.onclick = () => row.remove();
+
+            row.appendChild(keyInput);
+            row.appendChild(valInput);
+            row.appendChild(btnRemove);
+            metaFieldsContainer.appendChild(row);
+        }
+
+        // 初始化預設 Metadata 欄位
+        function initDefaultMetadata() {
+            metaFieldsContainer.innerHTML = '';
+            addMetadataField("Title", "");
+            addMetadataField("Time", new Date().toISOString().split('.')[0]);
+        }
+        initDefaultMetadata();
+
+        // --- 匯入與解密現有 .jcap 檔案邏輯 ---
+        function triggerImportLoad() {
+            document.getElementById('importFileInput').click();
+        }
+
+        async function importExistingJcap(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 優先嘗試取得輸入框現有的密碼，若無則跳出 Prompt 詢問
+            let password = document.getElementById('encPasswordInput').value;
+            if (!password) {
+                password = prompt("Please enter the password to decrypt this capsule:");
+                if (!password) {
+                    event.target.value = '';
+                    return;
+                }
+                document.getElementById('encPasswordInput').value = password;
+            }
+
+            try {
+                setEncStatus("Reading file for import...");
+                const arrayBuffer = await file.arrayBuffer();
+
+                const salt = arrayBuffer.slice(0, 16);
+                const nonce = arrayBuffer.slice(16, 28);
+                const ciphertext = arrayBuffer.slice(28);
+
+                setEncStatus("Calculating decryption key...");
+                const enc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey(
+                    "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
+                );
+                const aesKey = await crypto.subtle.deriveKey(
+                    { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                    keyMaterial, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
+                );
+
+                setEncStatus("Decrypting import...");
+                const decryptedBuffer = await crypto.subtle.decrypt(
+                    { name: "AES-GCM", iv: nonce }, aesKey, ciphertext
+                );
+
+                setEncStatus("Unzipping import...");
+                const zip = await JSZip.loadAsync(decryptedBuffer);
+                const metaText = await zip.file("metadata.json").async("string");
+                const metadata = JSON.parse(metaText);
+
+                // 1. 清空目前的暫存資料
+                currentStagedFiles = [];
+                metaFieldsContainer.innerHTML = '';
+
+                // 2. 載入元數據
+                const infoData = metadata.info || {};
+                for (const [k, v] of Object.entries(infoData)) {
+                    addMetadataField(k, v);
+                }
+
+                // 3. 載入媒體檔案
+                const mediaItems = metadata.media || [];
+                setEncStatus(`Loading ${mediaItems.length} media items...`);
+
+                for (const item of mediaItems) {
+                    if (item.type === 'motion_photo') {
+                        // 動態照片需要將圖檔與影片二進位資料重新拼接回單一檔案，以便後續 split 邏輯處理
+                        const imgUint8 = await zip.file(item.image).async("uint8array");
+                        const vidUint8 = await zip.file(item.video).async("uint8array");
+                        
+                        const combined = new Uint8Array(imgUint8.length + vidUint8.length);
+                        combined.set(imgUint8, 0);
+                        combined.set(vidUint8, imgUint8.length);
+
+                        currentStagedFiles.push({
+                            name: item.image,
+                            data: combined
+                        });
+                    } else if (item.type === 'image') {
+                        const data = await zip.file(item.image).async("uint8array");
+                        currentStagedFiles.push({ name: item.image, data });
+                    } else if (item.type === 'video') {
+                        const data = await zip.file(item.video).async("uint8array");
+                        currentStagedFiles.push({ name: item.video, data });
+                    } else if (item.type === 'audio') {
+                        const data = await zip.file(item.audio).async("uint8array");
+                        currentStagedFiles.push({ name: item.audio, data });
+                    }
+                }
+
+                refreshStagedMediaList();
+                setEncStatus("Imported successfully! You can now edit files and fields below.");
+                alert("Capsule loaded successfully! Metadata and files have been filled below for editing.");
+
+            } catch (error) {
+                console.error(error);
+                setEncStatus("Failed to import: check password or file integrity.", true);
+                alert("Import failed. Please ensure the password is correct.");
+            } finally {
+                event.target.value = ''; // 重設 input 狀態
+            }
+        }
+
+        // --- 動態照片分裂 binary 演算法 (同 Python split_motion_photo 邏輯移植) ---
+        function splitMotionPhoto(fileBytes) {
+            const decoder = new TextDecoder('latin1');
+            const text = decoder.decode(fileBytes);
+            
+            // 嘗試尋找 MicroVideoOffset
+            const match = text.match(/MicroVideoOffset[=">]+(\d+)/);
+            if (match) {
+                const offset = parseInt(match[1], 10);
+                if (offset > 0 && offset < fileBytes.length) {
+                    const splitPoint = fileBytes.length - offset;
+                    // 確認附近是否有 ftyp 標頭
+                    const segment = fileBytes.subarray(splitPoint, splitPoint + 16);
+                    const segmentText = decoder.decode(segment);
+                    if (segmentText.includes('ftyp')) {
+                        return {
+                            image: fileBytes.subarray(0, splitPoint),
+                            video: fileBytes.subarray(splitPoint)
+                        };
+                    }
+                }
+            }
+
+            // 備用尋找邏輯：搜尋 ftyp 標記
+            for (let i = 4; i < fileBytes.length - 4; i++) {
+                // 'f' 't' 'y' 'p' 的 ASCII 代碼
+                if (fileBytes[i] === 102 && fileBytes[i+1] === 116 && fileBytes[i+2] === 121 && fileBytes[i+3] === 112) {
+                    const boxSize = (fileBytes[i-4] << 24) | (fileBytes[i-3] << 16) | (fileBytes[i-2] << 8) | fileBytes[i-1];
+                    if (boxSize >= 8 && boxSize <= 100) {
+                        const splitPoint = i - 4;
+                        // 檢查 splitPoint 往前 512 bytes 內是否有 JPEG 結尾符 \xff\xd9
+                        const checkStart = Math.max(0, splitPoint - 512);
+                        let hasEoi = false;
+                        for (let j = checkStart; j < splitPoint - 1; j++) {
+                            if (fileBytes[j] === 0xff && fileBytes[j+1] === 0xd9) {
+                                hasEoi = true;
+                                break;
+                            }
+                        }
+                        if (hasEoi) {
+                            return {
+                                image: fileBytes.subarray(0, splitPoint),
+                                video: fileBytes.subarray(splitPoint)
+                            };
+                        }
+                    }
+                }
+            }
+
+            return { image: fileBytes, video: null };
+        }
+
+        function setEncStatus(msg, isError = false) {
+            const statusEl = document.getElementById('encStatusMsg');
+            statusEl.textContent = msg; statusEl.style.color = isError ? 'red' : 'dimgray';
+        }
+
+        // --- 加密打包執行核心 ---
+        async function processAndEncrypt() {
+            const password = document.getElementById('encPasswordInput').value;
+            if (currentStagedFiles.length === 0) {
+                setEncStatus("Please add at least one media file first.", true); return;
+            }
+            if (!password) {
+                setEncStatus("Please enter an encryption password.", true); return;
+            }
+
+            try {
+                setEncStatus("Packing files into ZIP...");
+                const zip = new JSZip();
+                const mediaMeta = [];
+
+                // 收集元數據
+                const infoData = {};
+                const rows = metaFieldsContainer.querySelectorAll('.meta-editor-row');
+                rows.forEach(row => {
+                    const inputs = row.querySelectorAll('input');
+                    const k = inputs[0].value.trim();
+                    const v = inputs[1].value.trim();
+                    if (k) infoData[k] = v;
+                });
+
+                // 處理所有暫存媒體
+                for (let idx = 0; idx < currentStagedFiles.length; idx++) {
+                    const item = currentStagedFiles[idx];
+                    const ext = '.' + item.name.split('.').pop().toLowerCase();
+
+                    // A組: 常規圖片格式 (可能會是動態照片)
+                    if (['.jpg', '.jpeg', '.heic', '.heif', '.gif'].includes(ext)) {
+                        const splitResult = splitMotionPhoto(item.data);
+                        const imgName = `media_${idx}${ext}`;
+                        zip.file(imgName, splitResult.image);
+
+                        if (splitResult.video) {
+                            const vidName = `media_${idx}.mp4`;
+                            zip.file(vidName, splitResult.video);
+                            mediaMeta.push({ type: "motion_photo", image: imgName, video: vidName });
+                        } else {
+                            mediaMeta.push({ type: "image", image: imgName });
+                        }
+                    }
+                    // B組: 其他不支援動態相片的圖片
+                    else if (['.png', '.webp'].includes(ext)) {
+                        const imgName = `media_${idx}${ext}`;
+                        zip.file(imgName, item.data);
+                        mediaMeta.push({ type: "image", image: imgName });
+                    }
+                    // C組: 影片
+                    else if (['.mp4', '.mov'].includes(ext)) {
+                        const vidName = `media_${idx}${ext}`;
+                        zip.file(vidName, item.data);
+                        mediaMeta.push({ type: "video", video: vidName });
+                    }
+                    // D組: 音訊
+                    else if (['.mp3', '.wav'].includes(ext)) {
+                        const audName = `media_${idx}${ext}`;
+                        zip.file(audName, item.data);
+                        mediaMeta.push({ type: "audio", audio: audName });
+                    }
+                }
+
+                // 寫入 metadata.json
+                const fullMeta = { info: infoData, media: mediaMeta };
+                const encJson = new TextEncoder().encode(JSON.stringify(fullMeta));
+                zip.file("metadata.json", encJson);
+
+                // 產生壓縮檔 ArrayBuffer
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                const zipBuffer = await zipBlob.arrayBuffer();
+
+                setEncStatus("Deriving encryption key (PBKDF2)...");
+                const salt = crypto.getRandomValues(new Uint8Array(16));
+                const nonce = crypto.getRandomValues(new Uint8Array(12));
+
+                const txtEnc = new TextEncoder();
+                const keyMaterial = await crypto.subtle.importKey(
+                    "raw", txtEnc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
+                );
+                const aesKey = await crypto.subtle.deriveKey(
+                    { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
+                    keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt"]
+                );
+
+                setEncStatus("Encrypting archive (AES-GCM)...");
+                const ciphertextBuffer = await crypto.subtle.encrypt(
+                    { name: "AES-GCM", iv: nonce }, aesKey, zipBuffer
+                );
+
+                setEncStatus("Packaging final artifact...");
+                
+                // 合併 Salt (16 bytes) + Nonce (12 bytes) + Ciphertext
+                const finalBuffer = new Uint8Array(salt.length + nonce.length + ciphertextBuffer.byteLength);
+                finalBuffer.set(salt, 0);
+                finalBuffer.set(nonce, salt.length);
+                finalBuffer.set(new Uint8Array(ciphertextBuffer), salt.length + nonce.length);
+
+                // 觸發下載
+                const outBlob = new Blob([finalBuffer], { type: "application/octet-stream" });
+                const downloadUrl = URL.createObjectURL(outBlob);
+                const downloadLink = document.createElement('a');
+                
+                // 取用 Title 欄位作為下載檔案的名稱
+				let saveTitle = "archive";
+				if (infoData["Title"]) {
+					// 1. 過濾作業系統不允許的非法檔名字元 \ / : * ? " < > | 以及控制字元
+					let sanitized = infoData["Title"].replace(/[\\/:*?"<>|\x00-\x1f\x7f]/g, '_').trim();
+					// 2. 避免檔名尾端的空格或句點（這在 Windows 系統中可能會造成錯誤）
+					sanitized = sanitized.replace(/[\s.]+$/, '');
+					
+					if (sanitized.length > 0) {
+						saveTitle = sanitized;
+					}
+				}
+                downloadLink.href = downloadUrl;
+                downloadLink.download = `${saveTitle}.jcap`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+
+                setEncStatus("Archive created and downloaded successfully!");
+                alert("Capsule created successfully! Your download should start automatically.");
+                
+            } catch (error) {
+                console.error(error);
+                setEncStatus(`Packaging failed: ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>
