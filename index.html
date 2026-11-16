@@ -1,1047 +1,159 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jcap Digital Archive Tool</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <style>
-        :root {
-            --primary-color: #007bff;
-            --primary-hover: #0056b3;
-            --bg-color: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-main: #333333;
-            --text-sub: #6c757d;
-            --border-color: #dee2e6;
-            --shadow: 0 8px 30px rgba(0,0,0,0.07);
-            --danger-color: #dc3545;
-            --danger-hover: #bd2130;
-            --success-color: #28a745;
-            --success-hover: #218838;
-            --info-color: #17a2b8;
-            --info-hover: #138496;
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JCAP 長影片工具 v2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:#f5f7fb;color:#182230;font:15px/1.55 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.shell{max-width:1080px;margin:auto;padding:38px 24px 64px}.topline{display:flex;align-items:center;justify-content:space-between;color:#596779;font-size:13px}.brand{display:flex;align-items:center;gap:10px;font-weight:750;color:#182230}.brand-mark{display:grid;place-items:center;width:34px;height:34px;background:#e7efff;color:#315fce;border-radius:11px}.badge{border:1px solid #dce3ed;border-radius:999px;padding:5px 10px;background:#fff}.hero{padding:48px 0 28px;max-width:760px}.eyebrow{color:#315fce;text-transform:uppercase;font-size:12px;letter-spacing:.12em;font-weight:750}.hero h1{font-size:clamp(32px,5vw,48px);line-height:1.12;letter-spacing:-.04em;margin:10px 0 14px}.hero p,.muted{color:#667386}.hero p{font-size:17px;max-width:700px}.layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:18px;align-items:start}.card{background:#fff;border:1px solid #e6eaf0;border-radius:18px;padding:24px;box-shadow:0 8px 28px #1b31500a}.card h2{font-size:19px;letter-spacing:-.02em;margin:0 0 6px}.card-intro{margin:0 0 19px;color:#718095;font-size:13px}.section-tag{font-size:11px;font-weight:750;letter-spacing:.1em;color:#315fce;margin-bottom:7px}.field-label{display:block;font-size:13px;font-weight:650;color:#3b4655;margin:16px 0 7px}input[type=password],input[type=text]{width:100%;padding:11px 13px;border:1px solid #d8dee8;border-radius:10px;background:#fff;color:#182230;font:inherit;outline:none}input:focus{border-color:#6c8ceb;box-shadow:0 0 0 3px #315fce18}input[type=file]{max-width:100%;font-size:13px;color:#607083}button{padding:10px 14px;border:1px solid transparent;border-radius:10px;background:#315fce;color:white;font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:.15s}button:hover{filter:brightness(.96);transform:translateY(-1px)}button:disabled{opacity:.55;cursor:wait;transform:none}button.secondary{background:#fff;color:#344256;border-color:#dce2eb}button.danger{background:#fff1f1;color:#b83240;border-color:#f6d7da;padding:7px 10px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.upload{border:1px dashed #c9d4e4;background:#fafcff;border-radius:12px;padding:14px;margin:14px 0}.list{margin-top:14px;border-top:1px solid #edf0f4}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 2px;border-bottom:1px solid #edf0f4}.row.selected{background:#f2f6ff}.row>span:first-child{overflow-wrap:anywhere;font-size:13px}.row span:last-child{display:flex;gap:6px;flex-shrink:0}.meta-head{display:flex;align-items:center;justify-content:space-between;margin-top:22px}.meta-head h3{font-size:14px;margin:0}.meta-row{display:grid;grid-template-columns:minmax(110px,.7fr) minmax(140px,1.4fr) auto;gap:8px;margin-top:9px}.meta-row input{min-width:0}.status-card{margin-top:18px;padding:13px 16px;background:#edf3ff;border:1px solid #dbe6ff;border-radius:12px;color:#294a8d;font-size:13px;min-height:48px;white-space:pre-wrap}.note{margin-top:14px;padding:12px 14px;background:#fff8e9;color:#795a1c;border:1px solid #f2e6c9;border-radius:11px;font-size:12px}.player-card{margin-top:18px}.player-wrap{margin-top:16px;border-radius:14px;overflow:hidden;background:#10151d;min-height:180px;display:grid;place-items:center}video,#photo-preview{display:block;width:100%;max-height:62vh;background:#10151d;object-fit:contain}#photo-preview{height:62vh}audio{width:min(100%,480px);margin:24px}.play-placeholder{padding:40px 16px;text-align:center;color:#a8b2c0;font-size:13px}.play-placeholder span{display:block;font-size:30px;margin-bottom:8px}.footer{margin-top:25px;color:#8893a2;font-size:12px;text-align:center}@media(max-width:760px){.shell{padding:22px 14px 40px}.hero{padding:35px 0 22px}.layout{grid-template-columns:1fr}.card{padding:19px}.meta-row{grid-template-columns:1fr 1.3fr auto}}
+.player-wrap{position:relative}.stage-image{display:block;width:100%;height:62vh;max-height:62vh;object-fit:contain;background:#10151d}.stage-video{display:block;width:100%;max-height:62vh;background:#10151d}.stage-audio{display:block;width:calc(100% - 40px);margin:36px auto}.stage-overlay{position:absolute;right:16px;bottom:16px;left:auto;z-index:5;transform:none;background:#ffffffeb;color:#243248;border:1px solid #ffffff;padding:10px 16px}.stage-overlay:hover{transform:translateY(-1px)}.media-label{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.media-name{overflow-wrap:anywhere}.type-badge{display:inline-block;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:750;white-space:nowrap}.type-photo{background:#eaf2ff;color:#315fce}.type-motion{background:#f2eaff;color:#7542b8}.type-video{background:#e5f8ef;color:#17824c}.type-audio{background:#fff1df;color:#ad6417}.media-actions{display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end}.media-actions button{white-space:nowrap}
+.shell{max-width:1360px;padding:26px 34px 40px}.hero{padding:30px 0 22px}.hero h1{font-size:clamp(36px,5vw,58px);max-width:820px}.hero p{max-width:640px;font-size:15px}.layout{grid-template-columns:minmax(0,.96fr) minmax(420px,1.04fr);gap:22px;align-items:start}.manager-card{height:min(790px,calc(100vh - 275px));min-height:570px;display:flex;flex-direction:column;overflow:hidden;padding:22px}.manager-card>h2{font-size:22px}.manager-card>.card-intro{margin-bottom:10px}.manager-card .field-label{margin-top:10px}.manager-card .upload{margin:10px 0;padding:12px 14px}.manager-card .actions{margin-top:4px}.library-head{display:flex;justify-content:space-between;align-items:end;margin-top:16px}.library-head h3,.meta-head h3{font-size:14px;letter-spacing:-.01em}.library-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8792a2;font-weight:750}.item-count{font:700 11px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:#586579;background:#f0f3f7;border-radius:99px;padding:7px 9px}.list{max-height:265px;min-height:105px;overflow:auto;overscroll-behavior:contain;margin-top:8px;border-top:1px solid #e7ebf0;border-bottom:1px solid #e7ebf0;scrollbar-color:#c5ccd6 transparent;scrollbar-width:thin}.row{padding:10px 8px;min-height:53px;border-bottom:1px solid #edf0f4;border-radius:8px;transition:background .18s,transform .18s}.row:hover{background:#f7f9fc}.row.selected{background:#eef3ff;box-shadow:inset 3px 0 #315fce}.row .media-name{font-weight:600;color:#303b4b}.media-actions button{padding:7px 9px;font-size:11px}.meta-head{margin-top:12px}.fields-list{max-height:150px;min-height:0;overflow:auto;overscroll-behavior:contain;padding-right:4px;scrollbar-color:#c5ccd6 transparent;scrollbar-width:thin}.meta-row{grid-template-columns:minmax(95px,.65fr) minmax(120px,1.35fr) auto;gap:7px;margin-top:7px}.meta-row input{padding:8px 10px;font-size:12px}.meta-row button{padding:6px 8px;font-size:11px}.preview-column{position:sticky;top:18px}.preview-column>.card{padding:22px}.preview-column .card h2{font-size:24px}.preview-column .card-intro{max-width:480px}.player-wrap{aspect-ratio:1.16;max-height:calc(100vh - 340px);min-height:310px;margin-top:13px;border-radius:16px;background:radial-gradient(ellipse at 50% 42%,#1c2637 0,#111722 72%)}.stage-image{height:100%;max-height:100%;object-fit:contain}.stage-video{max-height:100%;height:100%;object-fit:contain}.stage-audio{width:min(80%,480px);margin:auto}.play-placeholder{font-size:13px;letter-spacing:.02em}.status-card{margin-top:14px}.note{font-size:11px}.list-empty{padding:18px 8px;color:#7a8697;font-size:12px;text-align:center}.manager-card:focus-within{border-color:#cbd8fa;box-shadow:0 0 0 3px #315fce0b,0 14px 40px #182b4510}button:focus-visible,input:focus-visible{outline:3px solid #8faaf5;outline-offset:2px}.type-badge{letter-spacing:.02em}.meta-head button{font-size:11px;padding:7px 10px}.footer{margin-top:16px}@media(max-width:850px){.shell{padding:20px 16px 32px}.layout{grid-template-columns:1fr}.manager-card{height:auto;min-height:0;overflow:visible}.list{max-height:300px}.fields-list{max-height:210px}.preview-column{position:static}.player-wrap{max-height:none;min-height:260px;aspect-ratio:1.3}.stage-image{height:100%}.stage-video{height:100%}}@media(max-width:520px){.shell{padding:14px 10px 24px}.hero{padding:24px 0 16px}.manager-card,.preview-column>.card{padding:16px}.layout{gap:14px}.row{align-items:flex-start}.row .media-label{flex:1}.media-actions button{padding:6px 7px}.list{max-height:260px}.meta-row{grid-template-columns:minmax(75px,.7fr) minmax(95px,1.3fr) auto}}
+.manager-card{height:auto;min-height:0;overflow:visible}.list-empty{min-height:78px;display:grid;place-items:center;text-align:center}.preview-column .player-wrap{aspect-ratio:auto!important;height:min(70vh,760px);min-height:400px;max-height:none;padding:16px;display:flex;align-items:center;justify-content:center}.preview-column .stage-image,.preview-column .stage-video{width:auto;height:auto;max-width:100%;max-height:calc(70vh - 40px);object-fit:contain}.preview-column .stage-image.motion-still{width:100%;max-height:calc(70vh - 40px)}.preview-column .stage-audio{width:min(100%,480px);margin:0}.preview-column .play-placeholder{min-height:268px;display:grid;place-content:center;text-align:center}.preview-column .stage-overlay{right:16px;bottom:16px}.top-actions{display:flex;align-items:center;gap:9px}.storage-badge{display:inline-flex;align-items:center;gap:7px;border:1px solid #dce3ed;border-radius:999px;padding:6px 10px;background:#fff;color:#657286;font-size:11px;font-weight:700}.storage-badge::before{content:"";width:7px;height:7px;border-radius:50%;background:#a7b0bd}.storage-badge.supported{color:#20724b;background:#effaf4;border-color:#cdebd9}.storage-badge.supported::before{background:#2eac6d}.storage-badge.unsupported{color:#a34949;background:#fff3f1;border-color:#f2d8d4}.storage-badge.unsupported::before{background:#d45a50}.file-current{display:flex;align-items:center;gap:12px;min-width:0;margin:12px 0 0;padding:12px 14px;border:1px solid #e7ebf0;border-radius:12px;background:linear-gradient(110deg,#f8faff,#fff);color:#667386}.capsule-icon{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:11px;background:#eaf0ff;color:#315fce;font-size:17px}.capsule-copy{display:grid;min-width:0;gap:2px;flex:1}.capsule-label{color:#7c8797;font-size:10px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}.file-current strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#263447;font-size:13px;font-weight:700}.capsule-state{flex:0 0 auto;padding:5px 8px;border:1px solid #dce3ed;border-radius:999px;background:#fff;color:#68768a;font-size:10px;font-weight:700;white-space:nowrap}.file-current[data-state="dirty"]{border-color:#f0dfbd;background:linear-gradient(110deg,#fffaf0,#fff)}.file-current[data-state="dirty"] .capsule-icon{background:#fff0d3;color:#a36b08}.file-current[data-state="dirty"] .capsule-state{border-color:#f0dfbd;background:#fff7e8;color:#96610b}.file-current[data-state="loaded"] .capsule-icon{background:#eaf8f0;color:#238454}.file-current[data-state="loaded"] .capsule-state{border-color:#cdebd9;background:#effaf4;color:#20724b}.manager-card .library-head{margin-top:12px}@media(max-width:850px){.preview-column .player-wrap{height:auto;min-height:260px;max-height:none}.preview-column .stage-image,.preview-column .stage-video{max-height:65vh}.preview-column .stage-image.motion-still{max-height:72vh}.top-actions{gap:5px}.storage-badge,.badge{font-size:10px;padding:5px 7px}}@media(max-width:520px){.preview-column .player-wrap{min-height:220px;padding:10px}.top-actions{flex-direction:column;align-items:flex-end}.file-current{gap:8px;padding:10px}.capsule-icon{width:32px;height:32px;flex-basis:32px}.file-current strong{max-width:54vw;font-size:12px}.capsule-state{font-size:9px;padding:4px 6px}}
+.library-controls{display:flex;align-items:center;gap:7px}.order-hint{color:#8792a2;font-size:10px;white-space:nowrap}.media-actions .reorder{min-width:30px;padding:5px 7px;background:#fff;color:#4d5c70;border-color:#dce3ed;font-size:12px;line-height:1}.media-actions .reorder:disabled{opacity:.35;cursor:not-allowed;transform:none}.media-actions .reorder:hover:not(:disabled){background:#f2f6ff;color:#315fce}.media-label{flex-wrap:nowrap;min-width:0}.media-thumb{display:block;flex:0 0 42px;width:42px;height:42px;object-fit:cover;border:1px solid #e4e9f0;border-radius:8px;background:linear-gradient(145deg,#eef2f8,#e3e8f0);color:transparent}.audio-thumb,.thumb-fallback{display:grid;place-items:center;background:#fff3e2;border-color:#f4e0c3;color:#b46c18;font-size:20px;font-weight:700}.thumb-fallback.video-thumb{background:#e5f8ef;border-color:#ceeede;color:#19804c;font-size:15px}@media(max-width:520px){.library-head{align-items:center}.library-controls{gap:5px}.order-hint{font-size:9px}.media-actions .reorder{min-width:27px;padding:5px 6px}.media-thumb{flex-basis:36px;width:36px;height:36px}}
+.hero{max-width:none;display:flex;align-items:center;justify-content:space-between;gap:22px;padding:26px 0 20px}.hero h1{margin:0;font-size:clamp(29px,4vw,44px)}.hero-actions{display:flex;align-items:center;gap:9px;flex:0 0 auto}.hero-actions button{min-height:42px}.drop-overlay:not([hidden]){position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:#121a29b8;backdrop-filter:blur(4px);pointer-events:none}.drop-overlay-card{display:grid;justify-items:center;gap:8px;width:min(440px,100%);padding:32px 24px;border:1px solid #ffffffa6;border-radius:22px;background:#fff;box-shadow:0 24px 80px #0003;text-align:center}.drop-overlay-icon{display:grid;place-items:center;width:56px;height:56px;border-radius:18px;background:#eaf0ff;color:#315fce;font-size:32px}.drop-overlay-card strong{font-size:20px}.drop-overlay-card>span:last-child{color:#718095;font-size:13px}@media(max-width:760px){.hero{align-items:flex-start;flex-direction:column;gap:14px;padding:22px 0 18px}.hero-actions{width:100%;flex-wrap:wrap}.hero-actions button{flex:1}.shell{padding-top:18px}}
+</style></head><body>
+<main class="shell">
+<div class="topline"><div class="brand"><span class="brand-mark">J</span><span>JCAP ARCHIVE</span></div><div class="top-actions"><span class="storage-badge" id="opfs-status">檢查暫存支援…</span><span class="badge">瀏覽器端加密 · v2</span></div></div>
+<header class="hero"><h1>長影片，也能安心封存。</h1><div class="hero-actions"><button id="open" class="secondary">開啟既有 .jcap</button><button id="save">加密並另存 .jcap</button><input id="capsule" type="file" accept=".jcap" hidden></div></header>
+<div class="layout"><section class="card manager-card"><div class="section-tag">01 / 封存工作區</div><h2>建立或維護 capsule</h2><p class="card-intro">載入既有檔案，或加入媒體建立新的加密封存。</p>
+<label class="field-label" for="password">封存密碼</label><input id="password" type="password" autocomplete="new-password" placeholder="輸入用來加密或解密的密碼">
+<div class="upload"><label class="field-label" for="files">加入照片、影片或音訊</label><input id="files" type="file" multiple accept="image/*,video/*,audio/*,.mov,.heic,.heif"></div>
+<div class="file-current" id="capsule-card" data-state="empty" aria-live="polite"><span class="capsule-icon" aria-hidden="true">▤</span><span class="capsule-copy"><span class="capsule-label" id="capsule-label">封存檔狀態</span><strong id="current-capsule">尚未建立封存檔</strong></span><span class="capsule-state" id="capsule-state">尚未儲存</span></div>
+<div class="library-head"><div><div class="library-kicker">01 / Media Library</div><h3>媒體素材</h3></div><div class="library-controls"><span class="order-hint">用 ↑ ↓ 調整順序</span><span class="item-count" id="media-count">00 ITEMS</span></div></div><div id="items" class="list"></div><div class="meta-head"><h3>自訂資料</h3><button class="secondary" id="addField">＋ 新增欄位</button></div><div id="fields" class="fields-list"></div>
+</section><aside class="preview-column"><section class="card"><div class="section-tag">ALL IN ONE PLAYER</div><h2>媒體預覽</h2><p class="card-intro">選擇左側媒體清單，這個播放器會切換照片、動態照片、MP3 或 MP4。</p><div class="player-wrap" id="player-stage"><div class="play-placeholder"><span>▶</span>尚未選取媒體</div></div><p class="muted" style="font-size:12px;margin-bottom:0">同一時間只顯示目前選取的一項；切換時會停止並卸載前一個媒體。</p></section>
+</aside></div>
+<div class="status-card" id="status" role="status" aria-live="polite">就緒。輸入密碼後可加入媒體，或開啟既有 .jcap。</div><div class="footer">密碼與媒體只在此瀏覽器中處理。v2 格式可由此頁建立與讀取。</div>
+</main>
+<div class="drop-overlay" id="drop-overlay" hidden><div class="drop-overlay-card"><span class="drop-overlay-icon">↧</span><strong>放開檔案即可載入</strong><span>照片、影片與音訊會加入素材；.jcap 會開啟封存檔</span></div></div>
+<script>
+'use strict';
+const MAGIC=new TextEncoder().encode('JCAPV2\r\n'), CHUNK=4*1024*1024, ITER=250000;
+let entries=[], imported=null, opfsDir=null, activeUrls=[], activeTemps=[], selectedEntry=null, activeMedia=null, previewRequest=0, capsuleName='', capsuleDirty=false, thumbnailCache=new WeakMap(), thumbnailObserver=null, thumbnailQueue=[], thumbnailBusy=false;
+const $=id=>document.getElementById(id), status=s=>{$('status').textContent=s};
+function renderCapsuleState(){const card=$('capsule-card'),name=$('current-capsule'),label=$('capsule-label'),state=$('capsule-state');card.dataset.state=capsuleDirty?'dirty':capsuleName?'loaded':'empty';if(capsuleName){name.textContent=capsuleName;name.title=capsuleName;label.textContent='目前封存檔';state.textContent=capsuleDirty?'有未儲存變更':'已載入'}else if(entries.length){name.textContent=`${entries.length} 個媒體項目，準備建立 JCAP`;name.title=name.textContent;label.textContent='新封存';state.textContent='尚未儲存'}else{name.textContent='加入媒體或開啟既有 JCAP';name.title=name.textContent;label.textContent='封存檔狀態';state.textContent='尚未儲存'}}
+function setCapsuleName(name){capsuleName=name||'';capsuleDirty=false;renderCapsuleState()}
+function markCapsuleDirty(){capsuleDirty=true;renderCapsuleState()}
+const SAVE_DEBUG_KEY='jcap-last-save-debug';
+function storeSaveDebug(record){try{sessionStorage.setItem(SAVE_DEBUG_KEY,JSON.stringify({...record,updatedAt:new Date().toISOString()}))}catch{}}
+function recoverSaveDebug(){try{const raw=sessionStorage.getItem(SAVE_DEBUG_KEY);if(!raw)return;sessionStorage.removeItem(SAVE_DEBUG_KEY);const d=JSON.parse(raw);if(d.stage==='writing'){const message=d.phase==='processing'?`上次加密中斷：最後確認完成 ${d.chunksDone||0}/${d.totalChunks||0} 段，當時處理第 ${d.currentFileIndex||1} 個檔案的第 ${d.currentChunk||'?'} 段。`:`偵測到上次加密中斷：已完成 ${d.chunksDone||0}/${d.totalChunks||0} 個分段，約 ${fmt(d.bytesDone||0)}。`;status(message);console.warn('[JCAP debug]',message,d)}else if(d.stage==='error'){const message=`上次加密失敗：${d.errorName||'Error'} ${d.errorMessage||''}；中斷於 ${d.chunksDone||0}/${d.totalChunks||0} 個分段。`;status(message);console.warn('[JCAP debug]',message,d)}}catch{}}
+async function refreshStorageCapability(){const badge=$('opfs-status');badge.classList.remove('supported','unsupported');if(!navigator.storage||typeof navigator.storage.getDirectory!=='function'){badge.classList.add('unsupported');badge.textContent='OPFS 不支援';badge.title='此瀏覽器無法使用暫存播放';return}try{await navigator.storage.getDirectory();const estimate=await navigator.storage.estimate(),free=Number.isFinite(estimate.quota)&&Number.isFinite(estimate.usage)?Math.max(0,estimate.quota-estimate.usage):0;badge.classList.add('supported');badge.textContent=free?`OPFS 可用 · 約 ${fmt(free)}`:'OPFS 可用';badge.title='瀏覽器暫存播放支援正常；可用容量為估算值'}catch(error){badge.classList.add('unsupported');badge.textContent='OPFS 無法使用';badge.title=error.message}}
+const b64=b=>{let s='';for(const x of b)s+=String.fromCharCode(x);return btoa(s)};
+const un64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
+const cat=(...parts)=>{const n=parts.reduce((a,p)=>a+p.length,0),o=new Uint8Array(n);let k=0;for(const p of parts){o.set(p,k);k+=p.length}return o};
+const u32=n=>new Uint8Array([(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255]);
+const read32=b=>new DataView(b.buffer,b.byteOffset,b.byteLength).getUint32(0);
+function canonical(obj){return JSON.stringify(obj)}
+async function derive(password,salt,it){const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveBits']);const bits=new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',salt,iterations:it,hash:'SHA-256'},km,512));return {aes:await crypto.subtle.importKey('raw',bits.slice(0,32),{name:'AES-GCM'},false,['encrypt','decrypt']),mac:await crypto.subtle.importKey('raw',bits.slice(32),{name:'HMAC',hash:'SHA-256'},false,['sign','verify'])}}
+const nonceFor=(prefix,i)=>cat(prefix,u32(i));
+function setMeta(info={}){$('fields').replaceChildren();for(const [k,v] of Object.entries(info))addField(k,String(v))}
+function addField(k='',v=''){const row=document.createElement('div');row.className='meta-row';const a=document.createElement('input');a.type='text';a.placeholder='欄位';a.value=k;const b=document.createElement('input');b.type='text';b.placeholder='內容';b.value=v;const x=document.createElement('button');x.className='danger';x.textContent='移除';a.addEventListener('input',markCapsuleDirty);b.addEventListener('input',markCapsuleDirty);x.onclick=()=>{row.remove();markCapsuleDirty()};row.append(a,b,x);$('fields').append(row)}
+function mediaType(e){return e.kind==='motion_photo'?'motion':classify(e.name,e.mime)}
+function moveEntry(index,step){const target=index+step;if(target<0||target>=entries.length)return;[entries[index],entries[target]]=[entries[target],entries[index]];markCapsuleDirty();render()}
+async function createThumbnail(media){let temp=null,url='';try{let file=media.file;if(!file&&media.source){temp=await tempFile(media);file=temp.file}if(!file)return null;url=URL.createObjectURL(file);const canvas=document.createElement('canvas');canvas.width=96;canvas.height=96;const ctx=canvas.getContext('2d');if(classify(media.name,media.mime)==='video'){const video=document.createElement('video');video.muted=true;video.playsInline=true;video.preload='auto';video.src=url;await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('縮圖逾時')),12000);video.onloadeddata=()=>{clearTimeout(timer);resolve()};video.onerror=()=>{clearTimeout(timer);reject(Error('無法讀取影片畫面'))};video.load()});const scale=Math.max(96/video.videoWidth,96/video.videoHeight),w=video.videoWidth*scale,h=video.videoHeight*scale;ctx.drawImage(video,(96-w)/2,(96-h)/2,w,h);video.pause();video.removeAttribute('src');video.load()}else{const image=new Image();image.src=url;await image.decode();const scale=Math.max(96/image.naturalWidth,96/image.naturalHeight),w=image.naturalWidth*scale,h=image.naturalHeight*scale;ctx.drawImage(image,(96-w)/2,(96-h)/2,w,h)}return canvas.toDataURL('image/jpeg',.68)}catch{return null}finally{if(url)URL.revokeObjectURL(url);if(temp)await openOpfs().then(dir=>dir.removeEntry(temp.name).catch(()=>{})).catch(()=>{})}}
+function runThumbnailQueue(){if(thumbnailBusy)return;thumbnailBusy=true;(async()=>{while(thumbnailQueue.length){const job=thumbnailQueue.shift();try{job.resolve(await createThumbnail(job.media))}catch{job.resolve(null)}}thumbnailBusy=false})()}
+function requestThumbnail(media,img){let task=thumbnailCache.get(media);if(!task){task=new Promise(resolve=>{thumbnailQueue.push({media,resolve});runThumbnailQueue()});thumbnailCache.set(media,task)}task.then(src=>{if(!img.isConnected)return;if(src)img.src=src;else{const fallback=document.createElement('span');fallback.className=`media-thumb thumb-fallback${classify(media.name)==='video'?' video-thumb':''}`;fallback.textContent=classify(media.name)==='video'?'▶':'▧';fallback.setAttribute('aria-hidden','true');img.replaceWith(fallback)}})}
+function watchThumbnail(img,media){if(!('IntersectionObserver'in window)){requestThumbnail(media,img);return}if(!thumbnailObserver)thumbnailObserver=new IntersectionObserver(changes=>{for(const change of changes)if(change.isIntersecting){thumbnailObserver.unobserve(change.target);requestThumbnail(change.target._mediaEntry,change.target)}},{root:$('items'),rootMargin:'80px'});img._mediaEntry=media;thumbnailObserver.observe(img)}
+function render(){const host=$('items');thumbnailObserver?.disconnect();thumbnailObserver=null;host.replaceChildren();$('media-count').textContent=`${String(entries.length).padStart(2,'0')} ITEMS`;if(!entries.length){const empty=document.createElement('div');empty.className='list-empty';empty.textContent='媒體會顯示在這裡。加入檔案開始建立 capsule。';host.append(empty)}entries.forEach((e,i)=>{const r=document.createElement('div');r.className='row'+(selectedEntry===e?' selected':'');const label=document.createElement('span');label.className='media-label';const kind=mediaType(e),thumbMedia=e.kind==='motion_photo'?e.parts[0]:e;let thumb;if(kind==='audio'){thumb=document.createElement('span');thumb.className='media-thumb audio-thumb';thumb.textContent='♫';thumb.setAttribute('aria-hidden','true')}else{thumb=document.createElement('img');thumb.className='media-thumb';thumb.alt='';thumb.loading='lazy';watchThumbnail(thumb,thumbMedia)}const name=document.createElement('span');name.className='media-name';name.textContent=`${e.name} (${fmt(e.size)})`;const badge=document.createElement('span');badge.className=`type-badge type-${kind}`;badge.textContent={motion:'動態照片',image:'照片',video:'影片',audio:'聲音'}[kind]||'媒體';label.append(thumb,name,badge);const group=document.createElement('span');group.className='media-actions';const up=document.createElement('button');up.className='reorder';up.textContent='↑';up.title=`將 ${e.name} 上移`;up.setAttribute('aria-label',up.title);up.disabled=i===0;up.onclick=()=>moveEntry(i,-1);group.append(up);const down=document.createElement('button');down.className='reorder';down.textContent='↓';down.title=`將 ${e.name} 下移`;down.setAttribute('aria-label',down.title);down.disabled=i===entries.length-1;down.onclick=()=>moveEntry(i,1);group.append(down);if(e.kind==='motion_photo'||['video','image','audio'].includes(classify(e.name))){const play=document.createElement('button');play.textContent='選取播放';play.className='secondary';play.onclick=()=>{selectedEntry=e;render();playEntry(e)};group.append(play)}const dl=document.createElement('button');dl.className='secondary';dl.textContent='下載';dl.title='解密並下載這個媒體';dl.onclick=()=>downloadEntry(e);group.append(dl);const del=document.createElement('button');del.className='danger';del.textContent='移除';del.onclick=async()=>{if(selectedEntry===e){previewRequest++;await clearPreview();selectedEntry=null}entries.splice(i,1);markCapsuleDirty();render()};group.append(del);r.append(label,group);host.append(r)})}
+function fmt(n){return n<1024**3?`${(n/1024**2).toFixed(1)} MiB`:`${(n/1024**3).toFixed(2)} GiB`}
+async function addMediaFiles(files){for(const f of files){if(/\.(jpg|jpeg)$/i.test(f.name)){const split=splitMotionPhoto(new Uint8Array(await f.arrayBuffer()));if(split.video){const imageName=f.name,videoName=f.name.replace(/\.(jpg|jpeg)$/i,'.mp4'),imageFile=new File([split.image],imageName,{type:'image/jpeg'}),videoFile=new File([split.video],videoName,{type:'video/mp4'});entries.push({kind:'motion_photo',name:imageName,size:imageFile.size+videoFile.size,parts:[{name:imageName,size:imageFile.size,mime:'image/jpeg',file:imageFile},{name:videoName,size:videoFile.size,mime:'video/mp4',file:videoFile}]});continue}}entries.push({name:f.name,size:f.size,mime:f.type||mime(f.name),file:f})}if(files.length){markCapsuleDirty();render();status(`已加入 ${files.length} 個媒體檔案。`)}}
+$('files').onchange=async e=>{try{await addMediaFiles(Array.from(e.target.files))}catch(error){status(`加入檔案失敗：${error.message}`)}finally{e.target.value=''}};
+function mime(n){const x=n.split('.').pop().toLowerCase();return ({mp4:'video/mp4',mov:'video/quicktime',webm:'video/webm',m4v:'video/mp4',mp3:'audio/mpeg',wav:'audio/wav',m4a:'audio/mp4',aac:'audio/aac',jpg:'image/jpeg',jpeg:'image/jpeg',png:'image/png',webp:'image/webp',gif:'image/gif'})[x]||'application/octet-stream'}
+function splitMotionPhoto(bytes){const decoder=new TextDecoder('latin1'),text=decoder.decode(bytes),match=text.match(/MicroVideoOffset[="'>]+(\d+)/);if(match){const offset=Number(match[1]),point=bytes.length-offset;if(offset>0&&point>0&&decoder.decode(bytes.subarray(point,point+16)).includes('ftyp'))return {image:bytes.subarray(0,point),video:bytes.subarray(point)}}for(let i=4;i<bytes.length-4;i++){if(bytes[i]===102&&bytes[i+1]===116&&bytes[i+2]===121&&bytes[i+3]===112){const size=(bytes[i-4]<<24)|(bytes[i-3]<<16)|(bytes[i-2]<<8)|bytes[i-1];if(size>=8&&size<=100){const point=i-4,start=Math.max(0,point-512);for(let j=start;j<point-1;j++)if(bytes[j]===255&&bytes[j+1]===217)return {image:bytes.subarray(0,point),video:bytes.subarray(point)}}}}return {image:bytes,video:null}}
+async function openCapsuleFile(f){try{const pass=$('password').value;if(!pass)throw Error('請先輸入密碼');const sig=new Uint8Array(await f.slice(0,8).arrayBuffer());if(MAGIC.every((x,i)=>sig[i]===x)){status('讀取 v2 標頭並驗證…');const parsed=await readHeader(f,pass),physical=parsed.header.files.map(x=>({...x,source:{file:f,base:parsed.dataStart,crypto:parsed.crypto}}));await cleanupOpfsBeforeCapsuleLoad();entries=restoreGroups(physical,parsed.metadata.media||[]);setMeta(parsed.metadata.info||{});imported=parsed;setCapsuleName(f.name);render();status(`已載入 ${entries.length} 個 v2 媒體項目，可修改後另存；媒體內容未整批解密。`)}else{await importLegacy(f,pass)}}catch(err){status(`載入失敗：${err.message}`)}}
+$('addField').onclick=()=>{addField();markCapsuleDirty()};$('open').onclick=()=>$('capsule').click();
+$('capsule').onchange=async e=>{const f=e.target.files[0];if(f)await openCapsuleFile(f);e.target.value=''};
+let dragDepth=0;
+function isFileDrag(e){return Array.from(e.dataTransfer?.types||[]).includes('Files')}
+function isMediaFile(file){return /^(image|video|audio)\//i.test(file.type)||/\.(jpe?g|png|gif|webp|bmp|tiff?|heic|heif|avif|mp4|mov|webm|m4v|mkv|avi|wmv|mpeg|mpg|mp3|wav|m4a|aac|flac|ogg|opus|wma)$/i.test(file.name)}
+async function handleDroppedFiles(files){const capsules=files.filter(f=>/\.jcap$/i.test(f.name)),media=files.filter(f=>!capsules.includes(f)&&isMediaFile(f));if(capsules.length>1){status('一次請拖入一個 .jcap 封存檔。');return}if(capsules.length&&media.length){status('請分開拖入 .jcap 與媒體檔案。');return}if(capsules.length){await openCapsuleFile(capsules[0]);return}if(media.length){await addMediaFiles(media);const skipped=files.length-media.length;if(skipped)status(`已加入 ${media.length} 個媒體檔案；略過 ${skipped} 個不支援的檔案。`);return}status('沒有找到可載入的 .jcap、照片、影片或音訊檔案。')}
+document.addEventListener('dragenter',e=>{if(!isFileDrag(e))return;e.preventDefault();dragDepth++;$('drop-overlay').hidden=false});
+document.addEventListener('dragover',e=>{if(!isFileDrag(e))return;e.preventDefault();e.dataTransfer.dropEffect='copy'});
+document.addEventListener('dragleave',e=>{if(!isFileDrag(e))return;dragDepth=Math.max(0,dragDepth-1);if(!dragDepth)$('drop-overlay').hidden=true});
+document.addEventListener('drop',e=>{if(!isFileDrag(e))return;e.preventDefault();dragDepth=0;$('drop-overlay').hidden=true;handleDroppedFiles(Array.from(e.dataTransfer.files)).catch(error=>status(`拖曳載入失敗：${error.message}`))});
+function restoreGroups(physical,media){const byId=new Map(physical.map(f=>[f.id,f])),used=new Set(),out=[];for(const m of media){if(m.type==='motion_photo'){const image=byId.get(m.imageId)||physical.find(f=>f.name===m.image),video=byId.get(m.videoId)||physical.find(f=>f.name===m.video);if(image&&video){used.add(image.id);used.add(video.id);out.push({kind:'motion_photo',name:m.image||image.name,size:image.size+video.size,parts:[image,video]})}continue}const item=byId.get(m.id)||physical.find(f=>f.name===m.name);if(item&&!used.has(item.id)){used.add(item.id);out.push(item)}}for(const f of physical)if(!used.has(f.id))out.push(f);return out}
+async function importLegacy(file,password){status('讀取舊版 v1（舊格式需整包解密）…');const all=await file.arrayBuffer();if(all.byteLength<29)throw Error('檔案格式無效');const salt=all.slice(0,16),nonce=all.slice(16,28),cipher=all.slice(28),km=await crypto.subtle.importKey('raw',new TextEncoder().encode(password),'PBKDF2',false,['deriveKey']),key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:100000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:nonce},key,cipher),zip=await JSZip.loadAsync(plain),meta=JSON.parse(await zip.file('metadata.json').async('string'));await cleanupOpfsBeforeCapsuleLoad();entries=[];for(const m of meta.media||[]){if(m.type==='motion_photo'){const imageBlob=await zip.file(m.image).async('blob'),videoBlob=await zip.file(m.video).async('blob'),imageFile=new File([imageBlob],m.image,{type:mime(m.image)}),videoFile=new File([videoBlob],m.video,{type:'video/mp4'});entries.push({kind:'motion_photo',name:m.image,size:imageFile.size+videoFile.size,parts:[{name:m.image,size:imageFile.size,mime:mime(m.image),file:imageFile},{name:m.video,size:videoBlob.size,mime:'video/mp4',file:videoFile}]});continue}const path=m.image||m.video||m.audio;if(!path)continue;const blob=await zip.file(path).async('blob'),item=new File([blob],path,{type:mime(path)});entries.push({name:path,size:item.size,mime:mime(path),file:item})}setMeta(meta.info||{});setCapsuleName(file.name);render();status(`已匯入舊版 v1 的 ${entries.length} 個媒體項目；動態照片會保留為單一項目。另存後會轉成 v2。`)}
+async function readHeader(file,password){const pre=new Uint8Array(await file.slice(0,12).arrayBuffer());if(!MAGIC.every((x,i)=>pre[i]===x))throw Error('此頁目前只支援 JCAP v2；舊版 v1 請先用舊網頁解密匯出。');const len=read32(pre.slice(8));if(!len||len>16*1024*1024)throw Error('檔頭長度無效');const header=JSON.parse(await file.slice(12,12+len).text());if(header.version!==2||header.chunkSize<65536||header.chunkSize>16*1024*1024)throw Error('不支援的格式參數');const salt=un64(header.salt),cryptoKeys=await derive(password,salt,header.iterations);const mac=un64(header.headerMac),unsigned={...header};delete unsigned.headerMac;if(!await crypto.subtle.verify('HMAC',cryptoKeys.mac,mac,new TextEncoder().encode(canonical(unsigned))))throw Error('密碼錯誤或檔頭遭修改');const metaPlain=await crypto.subtle.decrypt({name:'AES-GCM',iv:un64(header.metaIv),additionalData:new TextEncoder().encode('JCAPv2 metadata')},cryptoKeys.aes,un64(header.metadata));const metadata=JSON.parse(new TextDecoder().decode(metaPlain));let off=0;for(const f of header.files){f.offset=off;off+=f.size+f.chunks*16;if(f.chunks!==Math.ceil(f.size/header.chunkSize))throw Error('區塊索引不一致')}if(12+len+off>file.size)throw Error('檔案內容不完整');return {header,metadata,dataStart:12+len,crypto:cryptoKeys}}
+async function decryptChunk(source,meta,i){const size=Math.min(meta.chunkSize,meta.size-i*meta.chunkSize),start=source.base+meta.offset+i*(meta.chunkSize+16),buf=await source.file.slice(start,start+size+16).arrayBuffer();return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:nonceFor(un64(meta.noncePrefix),i),additionalData:new TextEncoder().encode(`${meta.id}:${i}:${meta.size}`)},source.crypto.aes,buf))}
+async function openOpfs(){if(!navigator.storage?.getDirectory)throw Error('此瀏覽器不支援暫存檔播放（需要 OPFS）');if(!opfsDir)opfsDir=await navigator.storage.getDirectory();return opfsDir}
+async function cleanupOpfsBeforeCapsuleLoad(){previewRequest++;try{await clearPreview()}catch(error){console.warn('[JCAP] 播放暫存清理未完成',error)}thumbnailObserver?.disconnect();thumbnailObserver=null;while(thumbnailBusy||thumbnailQueue.length)await new Promise(resolve=>setTimeout(resolve,25));try{const dir=await openOpfs();for await(const [name] of dir.entries())if(name.startsWith('jcap-'))await dir.removeEntry(name).catch(()=>{});refreshStorageCapability()}catch(error){console.warn('[JCAP] OPFS 暫存清理未完成',error)}}
+async function tempFile(entry,onChunk){const dir=await openOpfs(),ext=(entry.name.match(/\.[a-z0-9]{1,8}$/i)||['.bin'])[0].toLowerCase(),name=`jcap-${crypto.randomUUID()}${ext}`,h=await dir.getFileHandle(name,{create:true}),w=await h.createWritable();try{if(entry.file){for(let off=0;off<entry.size;off+=CHUNK){const b=await entry.file.slice(off,Math.min(off+CHUNK,entry.size)).arrayBuffer();await w.write(b);onChunk?.(Math.min(off+CHUNK,entry.size),entry.size)}}else{const m=entry,src=entry.source;for(let i=0;i<m.chunks;i++){const b=await decryptChunk(src,m,i);await w.write(b);onChunk?.(Math.min((i+1)*m.chunkSize,m.size),m.size)}}await w.close();return {handle:h,file:await h.getFile(),name}}catch(e){await w.abort();await dir.removeEntry(name).catch(()=>{});throw e}}
+async function downloadEntry(entry){const items=entry.kind==='motion_photo'?entry.parts:[entry],size=items.reduce((n,x)=>n+x.size,0),name=entry.kind==='motion_photo'?entry.name:entry.name;let writer=null,handle=null,chunks=[];try{if(window.showSaveFilePicker){handle=await window.showSaveFilePicker({suggestedName:name,types:[{description:'Media file',accept:{'application/octet-stream':[name.match(/\.[^.]+$/)?.[0]||'.bin']}}]});writer=await handle.createWritable()}else if(size>128*1024*1024){throw Error('此瀏覽器不支援大型檔案串流下載，請用桌面版 Chrome 或 Edge')}let done=0;for(const item of items){const step=item.source?item.chunkSize:CHUNK,count=item.source?item.chunks:Math.ceil(item.size/step);for(let i=0;i<count;i++){const start=i*step,end=Math.min(start+step,item.size),data=item.source?await decryptChunk(item.source,item,i):new Uint8Array(await item.file.slice(start,end).arrayBuffer());if(writer)await writer.write(data);else chunks.push(data);done+=data.length;status(`下載解密中：${fmt(done)} / ${fmt(size)}`)}}if(writer){await writer.close()}else{const a=document.createElement('a'),url=URL.createObjectURL(new Blob(chunks,{type:entry.mime||mime(name)}));a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)}status(`已完成下載：${name}`)}catch(e){await writer?.abort().catch(()=>{});status(`下載失敗：${e.message}`)}}
+async function clearPreview(){const stage=$('player-stage');if(activeMedia){activeMedia.pause?.();activeMedia.removeAttribute?.('src');activeMedia.load?.();activeMedia=null}stage.replaceChildren();const empty=document.createElement('div');empty.className='play-placeholder';empty.innerHTML='<span>▶</span>尚未選取媒體';stage.append(empty);for(const url of activeUrls)URL.revokeObjectURL(url);activeUrls=[];if(activeTemps.length){const dir=await openOpfs();for(const name of activeTemps)await dir.removeEntry(name).catch(()=>{});activeTemps=[]}}
+function showMotionStill(imageUrl,videoUrl){const stage=$('player-stage'),img=document.createElement('img'),button=document.createElement('button');img.src=imageUrl;img.alt='動態照片';img.className='stage-image motion-still';button.className='stage-overlay';button.textContent='▶ 播放動態照片';button.onclick=()=>{const video=document.createElement('video');video.controls=true;video.className='stage-video';video.src=videoUrl;activeMedia=video;video.onended=()=>showMotionStill(imageUrl,videoUrl);stage.replaceChildren(video);video.play().catch(err=>status(`動態照片播放失敗：${err.message}`))};stage.replaceChildren(img,button)}
+async function playEntry(entry){const request=++previewRequest;try{await clearPreview();status(`${entry.source||entry.parts?.some(p=>p.source)?'逐段解密':'載入'} ${entry.name}…`);const items=entry.kind==='motion_photo'?entry.parts:[entry],temp=[];for(const item of items){temp.push(await tempFile(item,(n,t)=>status(`${item.source?'解密':'準備'}中：${fmt(n)} / ${fmt(t)}`)));if(request!==previewRequest){await (await openOpfs()).removeEntry(temp[temp.length-1].name).catch(()=>{});return}}activeTemps=temp.map(x=>x.name);const urls=temp.map(x=>URL.createObjectURL(x.file));activeUrls=urls;const stage=$('player-stage');if(entry.kind==='motion_photo'){showMotionStill(urls[0],urls[1])}else{const type=classify(entry.name);if(type==='video'){const video=document.createElement('video');video.controls=true;video.autoplay=false;video.className='stage-video';video.src=urls[0];activeMedia=video;stage.replaceChildren(video);video.load()}else if(type==='audio'){const audio=document.createElement('audio');audio.controls=true;audio.className='stage-audio';audio.src=urls[0];activeMedia=audio;stage.replaceChildren(audio);audio.load()}else{const image=document.createElement('img');image.className='stage-image';image.alt=entry.name;image.src=urls[0];stage.replaceChildren(image)}}status(`正在預覽：${entry.name}`)}catch(e){status(`無法預覽：${e.message}${location.protocol==='file:'?'。請使用 localhost 網址開啟工具。':''}`)}}
+async function saveCapsule(){
+  const password=$('password').value;
+  if(!password)throw Error('請輸入密碼');
+  const picker=window.showSaveFilePicker;
+  if(!picker)throw Error('此瀏覽器不支援大型檔案串流存檔，請使用桌面版 Chrome 或 Edge');
+  const info={};
+  for(const r of $('fields').children){const [k,v]=r.querySelectorAll('input');if(k.value.trim())info[k.value.trim()]=v.value}
+  const physical=entries.flatMap(e=>e.kind==='motion_photo'?e.parts:[e]);
+  const salt=crypto.getRandomValues(new Uint8Array(16)),keys=await derive(password,salt,ITER);
+  const files=physical.map(e=>({id:crypto.randomUUID(),name:e.name,mime:e.mime||mime(e.name),size:e.size,chunks:Math.ceil(e.size/CHUNK),chunkSize:CHUNK,noncePrefix:b64(crypto.getRandomValues(new Uint8Array(8))),offset:0,source:e.source||null,original:e}));
+  let offset=0;
+  for(const f of files){f.offset=offset;offset+=f.size+f.chunks*16;delete f.source;delete f.original}
+  const media=[];
+  let cursor=0;
+  for(const e of entries){if(e.kind==='motion_photo'){media.push({type:'motion_photo',imageId:files[cursor].id,videoId:files[cursor+1].id,image:files[cursor].name,video:files[cursor+1].name});cursor+=2}else{media.push({id:files[cursor].id,name:files[cursor].name,type:classify(files[cursor].name)});cursor++}}
+  const metaIv=crypto.getRandomValues(new Uint8Array(12));
+  const metaCipher=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv:metaIv,additionalData:new TextEncoder().encode('JCAPv2 metadata')},keys.aes,new TextEncoder().encode(JSON.stringify({info,media}))));
+  const h={version:2,iterations:ITER,chunkSize:CHUNK,salt:b64(salt),metaIv:b64(metaIv),metadata:b64(metaCipher),files};
+  const signature=await crypto.subtle.sign('HMAC',keys.mac,new TextEncoder().encode(canonical(h)));
+  h.headerMac=b64(new Uint8Array(signature));
+  const hb=new TextEncoder().encode(canonical(h));
+  if(hb.length>16*1024*1024)throw Error('檔頭過大');
+  const suggestedName=(info.Title||'archive').replace(/[\\/:*?"<>|]/g,'_')+'.jcap';
+  const handle=await picker({suggestedName,types:[{description:'JCAP capsule',accept:{'application/octet-stream':['.jcap']}}]});
+  const w=await handle.createWritable();
+  const totalChunks=files.reduce((n,f)=>n+f.chunks,0),totalBytes=physical.reduce((n,e)=>n+e.size,0),started=performance.now();
+  let chunksDone=0,bytesDone=0,currentFileIndex=0,currentChunk=0;
+  let phase='header';
+  const checkpoint=()=>({stage:'writing',phase,chunksDone,totalChunks,bytesDone,totalBytes,currentFileIndex,currentChunk});
+  storeSaveDebug(checkpoint());
+  console.info('[JCAP debug] 加密開始',{totalBytes,totalChunks,chunkSize:CHUNK,fileCount:files.length});
+  try{
+    await w.write(cat(MAGIC,u32(hb.length),hb));
+    phase='between_chunks';storeSaveDebug(checkpoint());
+    for(let fi=0;fi<files.length;fi++){
+      const f=files[fi],entry=physical[fi];
+      currentFileIndex=fi+1;
+      status(`加密 ${f.name} (${fi+1}/${files.length})…`);
+      for(let i=0;i<f.chunks;i++){
+        currentChunk=i+1;
+        phase='processing';storeSaveDebug(checkpoint());
+        try{
+          const start=i*CHUNK;
+          const plain=entry.source?await decryptChunk(entry.source,entry,i):new Uint8Array(await entry.file.slice(start,Math.min(start+CHUNK,f.size)).arrayBuffer());
+          const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv:nonceFor(un64(f.noncePrefix),i),additionalData:new TextEncoder().encode(`${f.id}:${i}:${f.size}`)},keys.aes,plain);
+          await w.write(cipher);
+          chunksDone++;bytesDone+=plain.byteLength;
+          phase='between_chunks';storeSaveDebug(checkpoint());
+        }catch(error){
+          console.error('[JCAP debug] 區塊處理失敗',{fileIndex:currentFileIndex,chunk:currentChunk,totalChunks:f.chunks,errorName:error?.name,errorMessage:error?.message,error});
+          throw error;
         }
-
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
+        if(chunksDone%8===0||chunksDone===totalChunks){
+          const seconds=Math.max(.001,(performance.now()-started)/1000),speed=bytesDone/seconds;
+          status(`加密 ${f.name} · ${fmt(bytesDone)} / ${fmt(totalBytes)} · ${fmt(speed)}/秒`);
+          storeSaveDebug(checkpoint());
+          console.info('[JCAP debug] 進度',{chunksDone,totalChunks,bytesDone,totalBytes,currentFileIndex,currentChunk,bytesPerSecond:Math.round(speed)});
         }
-
-        .hidden { display: none !important; }
-
-        /* Tabs Navigation */
-        .tabs-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        .tab-btn {
-            background-color: #e4e6eb;
-            color: var(--text-main);
-            border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 16px;
-            transition: all 0.2s ease;
-        }
-        .tab-btn.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .card { 
-            background: var(--card-bg); 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: var(--shadow); 
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            margin-bottom: 30px;
-        }
-
-        /* Import Section Box */
-        .import-box {
-            background: #f4f6f9;
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 15px 20px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .import-box-info {
-            flex: 1;
-            min-width: 250px;
-        }
-        .import-box-title {
-            font-weight: 700;
-            margin: 0 0 4px 0;
-            font-size: 15px;
-        }
-        .import-box-desc {
-            font-size: 13px;
-            color: var(--text-sub);
-            margin: 0;
-        }
-        .btn-import {
-            background-color: var(--success-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 14px;
-            transition: background 0.2s;
-        }
-        .btn-import:hover {
-            background-color: var(--success-hover);
-        }
-
-        /* Upload Area styling */
-        .upload-area {
-            position: relative; border: 2px dashed var(--primary-color); border-radius: 15px;
-            padding: 40px 20px; text-align: center; background-color: #fbfdff;
-            transition: all 0.3s ease; margin-bottom: 25px; overflow: hidden; width: 100%; cursor: pointer;
-            box-sizing: border-box;
-        }
-
-        .upload-area:hover, .upload-area.dragover {
-            background-color: #f0f8ff; border-color: var(--primary-hover);
-            transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,123,255,0.1);
-        }
-
-        .upload-icon { font-size: 48px; margin-bottom: 15px; }
-        .upload-text { color: var(--text-sub); font-weight: 500; }
-        .file-input-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-
-        /* Form elements */
-        .password-group { width: 100%; margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
-        input[type="password"], input[type="text"] {
-            padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px;
-            width: 100%; box-sizing: border-box; font-size: 16px; transition: border-color 0.2s;
-        }
-        input[type="password"]:focus, input[type="text"]:focus { border-color: var(--primary-color); outline: none; }
-
-        .btn-run {
-            background-color: var(--primary-color); color: white; border: none; padding: 15px 30px;
-            border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 16px; width: 100%;
-            transition: background 0.2s, transform 0.1s;
-        }
-        .btn-run:hover { background-color: var(--primary-hover); }
-        .btn-run:active { transform: scale(0.98); }
-
-        .status-msg { text-align: center; font-size: 0.9em; margin-top: 15px; color: dimgray; }
-
-        /* Media list in Encryption */
-        .media-list {
-            margin: 15px 0;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 10px;
-            background: #fafafa;
-        }
-        .media-item-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            border-bottom: 1px solid #eee;
-        }
-        .media-item-row:last-child { border-bottom: none; }
-        .media-item-name {
-            font-size: 14px;
-            word-break: break-all;
-            margin-right: 10px;
-        }
-        .btn-delete {
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 4px 8px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        .btn-delete:hover { background: var(--danger-hover); }
-
-        .btn-download {
-            background: var(--info-color);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 4px 8px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background 0.2s;
-        }
-        .btn-download:hover { background: var(--info-hover); }
-
-        /* Metadata management style */
-        .meta-editor-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-            align-items: center;
-        }
-        .meta-editor-row input { flex: 1; }
-        .btn-add-meta {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-        .btn-add-meta:hover { background-color: #5a6268; }
-
-        /* Decrypt / Display Section Layout */
-        #display-section h2 {
-            font-size: 32px; font-weight: 800; margin-top: 0; margin-bottom: 30px;
-            border-bottom: 2px solid #f1f3f5; padding-bottom: 15px;
-        }
-
-        .content-layout { display: flex; flex-direction: column; gap: 30px; }
-        @media (min-width: 768px) { .content-layout { flex-direction: row; } }
-
-        .meta-column { flex: 1; }
-        .media-column { flex: 1.5; display: flex; flex-direction: column; align-items: center; }
-
-        .meta-data { background: #fbfdff; padding: 25px; border-radius: 15px; border: 1px solid #eef2f5; }
-        .meta-data p { margin: 12px 0; border-bottom: 1px solid #f8f9fa; padding-bottom: 12px; }
-        .meta-data p:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-        .meta-data strong { color: var(--text-main); font-weight: 600; display: inline-block; min-width: 80px; margin-right: 10px; }
-        .meta-data span { color: #555; word-break: break-all; }
-
-        #carousel-area { position: relative; width: 100%; display: none; }
-
-        .media-wrapper {
-            display: none; width: 100%; height: 450px; border-radius: 15px;
-            overflow: hidden; background-color: #000; position: relative;
-        }
-        .media-wrapper.active { display: block; }
-        .media-wrapper img, .media-wrapper video {
-            width: 100%; height: 100%; display: block; margin: 0; object-fit: contain;
-        }
-
-        .nav-btn {
-            position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0, 0, 0, 0.4);
-            color: white; border: none; border-radius: 50%; width: 44px; height: 44px; font-size: 18px;
-            cursor: pointer; z-index: 20; display: flex; align-items: center; justify-content: center;
-            transition: background 0.2s; backdrop-filter: blur(2px);
-        }
-        .nav-btn:hover { background: rgba(0, 0, 0, 0.7); }
-        #prevBtn { left: 15px; }
-        #nextBtn { right: 15px; }
-
-        #carousel-indicator { text-align: center; margin-top: 15px; color: var(--text-sub); font-weight: 500; display: none; }
-        
-        #btn-download-active {
-            display: none;
-            margin: 15px auto 0 auto;
-            padding: 8px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 8px;
-        }
-
-        .motion-icon {
-            position: absolute; top: 15px; left: 15px; background: rgba(0, 0, 0, 0.5); color: white;
-            padding: 7px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
-            display: flex; align-items: center; gap: 6px; z-index: 10; pointer-events: none; backdrop-filter: blur(5px);
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Tab Switchers -->
-    <div class="tabs-container">
-        <button id="tab-decrypt-btn" class="tab-btn active" onclick="switchTab('decrypt')">🔓 Decrypt Archive</button>
-        <button id="tab-encrypt-btn" class="tab-btn" onclick="switchTab('encrypt')">🔒 Encrypt & Package</button>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- DECRYPT SECTION                            -->
-    <!-- ========================================== -->
-    <div id="decrypt-tab" class="tab-content">
-        <div class="card" id="upload-section">
-            <h2>Decode JCAP Capsule</h2>
-            <div class="upload-area" id="dropZone">
-                <div class="upload-icon">📄</div>
-                <div class="upload-text" id="fileNameDisplay">Click to select or drag .jcap file here</div>
-                <input type="file" id="fileInput" accept=".jcap" class="file-input-overlay">
-            </div>
-            <div class="password-group">
-                <label for="passwordInput">Secret Password:</label>
-                <input type="password" id="passwordInput" placeholder="••••••••••••">
-            </div>
-            <button class="btn-run" onclick="decryptAndRender()">🚀 Decrypt and Render</button>
-            <p id="statusMsg" class="status-msg"></p>
-        </div>
-
-        <div class="card hidden" id="display-section">
-            <h2 id="display-location"></h2>
-            <div class="content-layout">
-                <div class="meta-column">
-                    <div class="meta-data" id="dynamic-meta-container"></div>
-                </div>
-                <div class="media-column">
-                    <div id="carousel-area">
-                        <button id="prevBtn" class="nav-btn">◀</button>
-                        <div id="media-container"></div>
-                        <button id="nextBtn" class="nav-btn">▶</button>
-                    </div>
-                    <div id="carousel-indicator"></div>
-                    <!-- 檢視解密內容時的單檔下載按鈕 -->
-                    <button id="btn-download-active" class="btn-download">💾 Download Current File</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- ENCRYPT SECTION                            -->
-    <!-- ========================================== -->
-    <div id="encrypt-tab" class="tab-content hidden">
-        <div class="card">
-            <h2>Create / Edit JCAP Capsule</h2>
-            
-            <!-- 0. Import Existing Capsule -->
-            <div class="import-box">
-                <div class="import-box-info">
-                    <p class="import-box-title">Want to modify an existing capsule?</p>
-                    <p class="import-box-desc">Load an existing .jcap file to auto-fill metadata and media files below for editing.</p>
-                </div>
-                <button type="button" class="btn-import" onclick="triggerImportLoad()">📂 Load Existing .jcap</button>
-                <input type="file" id="importFileInput" accept=".jcap" class="hidden" onchange="importExistingJcap(event)">
-            </div>
-
-            <!-- 1. Media Manager -->
-            <fieldset style="border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                <legend style="padding: 0 10px; font-weight: 700;">1. Media Manager (Photos/Videos/Audio)</legend>
-                <div class="upload-area" id="encDropZone" style="padding: 20px 10px; margin-bottom: 15px;">
-                    <div class="upload-icon" style="font-size: 32px; margin-bottom: 5px;">➕</div>
-                    <div class="upload-text" id="encFileNameDisplay">Click or Drag files to add to staging</div>
-                    <input type="file" id="encFileInput" multiple accept=".jpg,.jpeg,.png,.webp,.heic,.heif,.gif,.mp4,.mov,.mp3,.wav" class="file-input-overlay">
-                </div>
-                <div class="media-list id-media-list hidden" id="staged-media-container"></div>
-            </fieldset>
-
-            <!-- 2. Metadata Manager -->
-            <fieldset style="border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                <legend style="padding: 0 10px; font-weight: 700;">2. Metadata (Custom Fields)</legend>
-                <div id="metadata-fields-container">
-                    <!-- Default fields inserted via Javascript -->
-                </div>
-                <button type="button" class="btn-add-meta" onclick="addMetadataField('', '')">➕ Add Custom Field</button>
-            </fieldset>
-
-            <!-- 3. Security Settings -->
-            <fieldset style="border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 25px;">
-                <legend style="padding: 0 10px; font-weight: 700;">3. Encryption Settings</legend>
-                <div class="password-group" style="margin-bottom: 0;">
-                    <label for="encPasswordInput">Encryption Password:</label>
-                    <input type="password" id="encPasswordInput" placeholder="Set password for encryption">
-                </div>
-            </fieldset>
-
-            <button class="btn-run" onclick="processAndEncrypt()">🚀 Save as New Encrypted Capsule</button>
-            <p id="encStatusMsg" class="status-msg"></p>
-        </div>
-    </div>
-
-    <script>
-        // --- 全域變數定義 ---
-        let currentStagedFiles = []; // 暫存區資料結構: [{"name": str, "data": Uint8Array}]
-        let activeDecryptedItems = []; // 檢視區資料結構: [{"name": str, "blob": Blob}] (供輪播器下載使用)
-
-        // --- 共享輔助函式 ---
-        function getMimeType(fileName) {
-            const ext = fileName.split('.').pop().toLowerCase();
-            const map = {
-                'jpg': 'image/jpeg', 'jpeg': 'image/jpeg', 'png': 'image/png', 'webp': 'image/webp',
-                'mp4': 'video/mp4', 'mov': 'video/quicktime',
-                'mp3': 'audio/mpeg', 'wav': 'audio/wav'
-            };
-            return map[ext] || '';
-        }
-
-        // --- 分頁切換邏輯 ---
-        function switchTab(mode) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-
-            if (mode === 'decrypt') {
-                document.getElementById('tab-decrypt-btn').classList.add('active');
-                document.getElementById('decrypt-tab').classList.remove('hidden');
-            } else {
-                document.getElementById('tab-encrypt-btn').classList.add('active');
-                document.getElementById('encrypt-tab').classList.remove('hidden');
-            }
-        }
-
-        // ========================================================
-        // DECRYPTION CORE (解密與瀏覽檢視)
-        // ========================================================
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
-        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault(); dropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) { fileInput.files = e.dataTransfer.files; updateFileName(); }
-        });
-        fileInput.addEventListener('change', updateFileName);
-
-        function updateFileName() {
-            if (fileInput.files.length > 0) {
-                fileNameDisplay.textContent = `Selected: ${fileInput.files[0].name}`;
-                fileNameDisplay.style.color = '#007bff';
-            }
-        }
-
-        function setStatus(msg, isError = false) {
-            const statusEl = document.getElementById('statusMsg');
-            statusEl.textContent = msg; statusEl.style.color = isError ? 'red' : 'dimgray';
-        }
-
-        async function decryptAndRender() {
-            const fileInput = document.getElementById('fileInput');
-            const passwordInput = document.getElementById('passwordInput').value;
-
-            if (fileInput.files.length === 0 || !passwordInput) {
-                setStatus("Please select a file and enter a password", true); return;
-            }
-
-            try {
-                setStatus("Reading file...");
-                const file = fileInput.files[0];
-                const arrayBuffer = await file.arrayBuffer();
-
-                const salt = arrayBuffer.slice(0, 16);
-                const nonce = arrayBuffer.slice(16, 28);
-                const ciphertext = arrayBuffer.slice(28);
-
-                setStatus("Calculating decryption key...");
-                const enc = new TextEncoder();
-                const keyMaterial = await crypto.subtle.importKey(
-                    "raw", enc.encode(passwordInput), { name: "PBKDF2" }, false, ["deriveKey"]
-                );
-                const aesKey = await crypto.subtle.deriveKey(
-                    { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
-                    keyMaterial, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
-                );
-
-                setStatus("Decrypting...");
-                const decryptedBuffer = await crypto.subtle.decrypt(
-                    { name: "AES-GCM", iv: nonce }, aesKey, ciphertext
-                );
-
-                setStatus("Unzipping...");
-                const zip = await JSZip.loadAsync(decryptedBuffer);
-                const metaText = await zip.file("metadata.json").async("string");
-                const metadata = JSON.parse(metaText);
-
-                const mediaContainer = document.getElementById('media-container');
-                mediaContainer.innerHTML = ''; 
-                const mediaItems = metadata.media || [];
-                let mediaWrappers = []; 
-                let currentIndex = 0;   
-                
-                // 重置輪播下載暫存區
-                activeDecryptedItems = [];
-
-                for (const item of mediaItems) {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'media-wrapper'; 
-                    
-                    if (item.type === 'motion_photo') {
-                        const imgBlob = await zip.file(item.image).async("blob");
-                        const vidBlob = await zip.file(item.video).async("blob");
-                        const imgEl = document.createElement('img'); imgEl.src = URL.createObjectURL(imgBlob);
-                        const vidEl = document.createElement('video');
-                        vidEl.src = URL.createObjectURL(new Blob([vidBlob], { type: 'video/mp4' }));
-                        vidEl.controls = true; vidEl.classList.add('hidden');
-                        const iconEl = document.createElement('div'); iconEl.className = 'motion-icon'; iconEl.innerHTML = '▶ 動態照片';
-                        
-                        wrapper.style.cursor = 'pointer';
-                        wrapper.appendChild(imgEl); wrapper.appendChild(vidEl); wrapper.appendChild(iconEl);
-                        wrapper.addEventListener('click', () => {
-                            if (vidEl.classList.contains('hidden')) {
-                                imgEl.classList.add('hidden'); iconEl.classList.add('hidden');
-                                vidEl.classList.remove('hidden'); wrapper.style.cursor = 'default'; vidEl.play();
-                            }
-                        });
-
-                        // 供檢視下載使用：將圖片和影片拼接為單一相片檔案（保留動態相片屬性）
-                        const imgUint8 = await zip.file(item.image).async("uint8array");
-                        const vidUint8 = await zip.file(item.video).async("uint8array");
-                        const combined = new Uint8Array(imgUint8.length + vidUint8.length);
-                        combined.set(imgUint8, 0);
-                        combined.set(vidUint8, imgUint8.length);
-                        activeDecryptedItems.push({
-                            name: item.image,
-                            blob: new Blob([combined], { type: 'image/jpeg' })
-                        });
-
-                    } else if (item.type === 'image') {
-                        const imgBlob = await zip.file(item.image).async("blob");
-                        const imgEl = document.createElement('img'); 
-                        imgEl.src = URL.createObjectURL(imgBlob);
-                        wrapper.appendChild(imgEl);
-
-                        activeDecryptedItems.push({ name: item.image, blob: imgBlob });
-
-                    } else if (item.type === 'video') {
-                        const vidBlob = await zip.file(item.video).async("blob");
-                        const mimeType = getMimeType(item.video);
-                        const vidEl = document.createElement('video');
-                        vidEl.src = URL.createObjectURL(new Blob([vidBlob], { type: mimeType }));
-                        vidEl.controls = true; 
-                        wrapper.appendChild(vidEl);
-
-                        activeDecryptedItems.push({ name: item.video, blob: vidBlob });
-
-                    } else if (item.type === 'audio') {
-                        const audBlob = await zip.file(item.audio).async("blob");
-                        const mimeType = getMimeType(item.audio);
-                        
-                        const placeholder = document.createElement('div');
-                        placeholder.style.width = '100%'; placeholder.style.height = '100%';
-                        placeholder.style.display = 'flex'; placeholder.style.alignItems = 'center';
-                        placeholder.style.justifyContent = 'center'; placeholder.style.fontSize = '100px';
-                        placeholder.style.backgroundColor = '#1a1a1a'; placeholder.innerHTML = '🎵';
-                        
-                        const audEl = document.createElement('audio');
-                        audEl.src = URL.createObjectURL(new Blob([audBlob], { type: mimeType }));
-                        audEl.controls = true;
-                        
-                        audEl.style.position = 'absolute'; audEl.style.top = '70%';
-                        audEl.style.left = '50%'; audEl.style.transform = 'translate(-50%, -50%)';
-                        audEl.style.width = '80%';
-                        
-                        wrapper.appendChild(placeholder); wrapper.appendChild(audEl);
-
-                        activeDecryptedItems.push({ name: item.audio, blob: audBlob });
-                    }
-                    mediaWrappers.push(wrapper); mediaContainer.appendChild(wrapper);
-                }
-
-                const carouselArea = document.getElementById('carousel-area');
-                const indicator = document.getElementById('carousel-indicator');
-                const prevBtn = document.getElementById('prevBtn');
-                const nextBtn = document.getElementById('nextBtn');
-                const downloadActiveBtn = document.getElementById('btn-download-active');
-
-                function showMedia(index) {
-                    if (mediaWrappers.length === 0) return;
-                    currentIndex = (index + mediaWrappers.length) % mediaWrappers.length;
-                    mediaWrappers.forEach(w => {
-                        w.classList.remove('active');
-                        const video = w.querySelector('video'); if (video) video.pause();
-                        const audio = w.querySelector('audio'); if (audio) audio.pause();
-                    });
-                    mediaWrappers[currentIndex].classList.add('active');
-                    indicator.textContent = `${currentIndex + 1} / ${mediaWrappers.length}`;
-                }
-
-                if (mediaWrappers.length > 0) {
-                    carouselArea.style.display = 'block'; indicator.style.display = 'block';
-                    downloadActiveBtn.style.display = 'block'; // 顯示下載按鈕
-                    prevBtn.style.display = mediaWrappers.length > 1 ? 'flex' : 'none';
-                    nextBtn.style.display = mediaWrappers.length > 1 ? 'flex' : 'none';
-                    showMedia(0);
-                }
-
-                prevBtn.onclick = () => showMedia(currentIndex - 1);
-                nextBtn.onclick = () => showMedia(currentIndex + 1);
-
-                // 檢視頁面的下載處理
-                downloadActiveBtn.onclick = () => {
-                    const activeItem = activeDecryptedItems[currentIndex];
-                    if (activeItem) {
-                        const url = URL.createObjectURL(activeItem.blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = activeItem.name;
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                    }
-                };
-
-                const metaContainer = document.getElementById('dynamic-meta-container');
-                metaContainer.innerHTML = ''; 
-                let infoData = metadata.info || {};
-                
-                const mainTitle = infoData['Title'] || "Memory Capsule";
-                document.getElementById('display-location').textContent = mainTitle;
-
-                for (const [key, value] of Object.entries(infoData)) {
-                    const pTag = document.createElement('p');
-                    pTag.innerHTML = `<strong>${key}：</strong><span>${value}</span>`;
-                    metaContainer.appendChild(pTag);
-                }
-
-                document.getElementById('upload-section').classList.add('hidden');
-                document.getElementById('display-section').classList.remove('hidden');
-
-            } catch (error) { 
-                console.error(error); 
-                setStatus("Decryption failed! Please check your password.", true); 
-            }
-        }
-
-
-        // ========================================================
-        // ENCRYPTION CORE (加密與編輯、暫存清單管理)
-        // ========================================================
-        const encDropZone = document.getElementById('encDropZone');
-        const encFileInput = document.getElementById('encFileInput');
-        const stagedMediaContainer = document.getElementById('staged-media-container');
-
-        encDropZone.addEventListener('dragover', (e) => { e.preventDefault(); encDropZone.classList.add('dragover'); });
-        encDropZone.addEventListener('dragleave', () => { encDropZone.classList.remove('dragover'); });
-        encDropZone.addEventListener('drop', async (e) => {
-            e.preventDefault(); encDropZone.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                await stageFiles(e.dataTransfer.files);
-            }
-        });
-        encFileInput.addEventListener('change', async () => {
-            if (encFileInput.files.length > 0) {
-                await stageFiles(encFileInput.files);
-            }
-        });
-
-        // 讀取檔案二進位資訊並加入快取
-        async function stageFiles(files) {
-            for (let file of files) {
-                const buffer = await file.arrayBuffer();
-                const uint8Array = new Uint8Array(buffer);
-                currentStagedFiles.push({
-                    name: file.name,
-                    data: uint8Array
-                });
-            }
-            refreshStagedMediaList();
-        }
-
-        // 刷新暫存區媒體檔案列表 (含下載按鈕與刪除按鈕)
-        function refreshStagedMediaList() {
-            if (currentStagedFiles.length === 0) {
-                stagedMediaContainer.classList.add('hidden');
-                stagedMediaContainer.innerHTML = '';
-                return;
-            }
-
-            stagedMediaContainer.classList.remove('hidden');
-            stagedMediaContainer.innerHTML = '';
-
-            currentStagedFiles.forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = 'media-item-row';
-
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'media-item-name';
-                nameSpan.textContent = `[${index + 1}] ${item.name}`;
-
-                // 按鈕控制區
-                const actionGroup = document.createElement('div');
-                actionGroup.style.display = 'flex';
-                actionGroup.style.gap = '8px';
-
-                // 下載按鈕 (💾)
-                const btnDownload = document.createElement('button');
-                btnDownload.className = 'btn-download';
-                btnDownload.textContent = '💾';
-                btnDownload.title = 'Download this file';
-                btnDownload.onclick = () => downloadStagedItem(index);
-
-                // 刪除按鈕 (❌)
-                const btnDelete = document.createElement('button');
-                btnDelete.className = 'btn-delete';
-                btnDelete.textContent = '❌';
-                btnDelete.title = 'Remove';
-                btnDelete.onclick = () => removeStagedItem(index);
-
-                actionGroup.appendChild(btnDownload);
-                actionGroup.appendChild(btnDelete);
-
-                row.appendChild(nameSpan);
-                row.appendChild(actionGroup);
-                stagedMediaContainer.appendChild(row);
-            });
-        }
-
-        // 下載暫存檔案執行邏輯
-        function downloadStagedItem(index) {
-            const item = currentStagedFiles[index];
-            if (!item) return;
-
-            const mimeType = getMimeType(item.name) || 'application/octet-stream';
-            const blob = new Blob([item.data], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = item.name;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function removeStagedItem(index) {
-            currentStagedFiles.splice(index, 1);
-            refreshStagedMediaList();
-        }
-
-        // --- Metadata 控制項 ---
-        const metaFieldsContainer = document.getElementById('metadata-fields-container');
-        
-        function addMetadataField(key = "", val = "") {
-            const row = document.createElement('div');
-            row.className = 'meta-editor-row';
-
-            const keyInput = document.createElement('input');
-            keyInput.type = 'text';
-            keyInput.placeholder = '欄位名稱 (Key)';
-            keyInput.value = key;
-            keyInput.style.maxWidth = '150px';
-
-            const valInput = document.createElement('input');
-            valInput.type = 'text';
-            valInput.placeholder = '內容值 (Value)';
-            valInput.value = val;
-
-            const btnRemove = document.createElement('button');
-            btnRemove.className = 'btn-delete';
-            btnRemove.style.padding = '10px 15px';
-            btnRemove.textContent = '❌';
-            btnRemove.onclick = () => row.remove();
-
-            row.appendChild(keyInput);
-            row.appendChild(valInput);
-            row.appendChild(btnRemove);
-            metaFieldsContainer.appendChild(row);
-        }
-
-        // 初始化預設 Metadata 欄位
-        function initDefaultMetadata() {
-            metaFieldsContainer.innerHTML = '';
-            addMetadataField("Title", "");
-            addMetadataField("Time", new Date().toISOString().split('.')[0]);
-        }
-        initDefaultMetadata();
-
-        // --- 匯入與解密現有 .jcap 檔案邏輯 ---
-        function triggerImportLoad() {
-            document.getElementById('importFileInput').click();
-        }
-
-        async function importExistingJcap(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // 優先嘗試取得輸入框現有的密碼，若無則跳出 Prompt 詢問
-            let password = document.getElementById('encPasswordInput').value;
-            if (!password) {
-                password = prompt("Please enter the password to decrypt this capsule:");
-                if (!password) {
-                    event.target.value = '';
-                    return;
-                }
-                document.getElementById('encPasswordInput').value = password;
-            }
-
-            try {
-                setEncStatus("Reading file for import...");
-                const arrayBuffer = await file.arrayBuffer();
-
-                const salt = arrayBuffer.slice(0, 16);
-                const nonce = arrayBuffer.slice(16, 28);
-                const ciphertext = arrayBuffer.slice(28);
-
-                setEncStatus("Calculating decryption key...");
-                const enc = new TextEncoder();
-                const keyMaterial = await crypto.subtle.importKey(
-                    "raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
-                );
-                const aesKey = await crypto.subtle.deriveKey(
-                    { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
-                    keyMaterial, { name: "AES-GCM", length: 256 }, false, ["decrypt"]
-                );
-
-                setEncStatus("Decrypting import...");
-                const decryptedBuffer = await crypto.subtle.decrypt(
-                    { name: "AES-GCM", iv: nonce }, aesKey, ciphertext
-                );
-
-                setEncStatus("Unzipping import...");
-                const zip = await JSZip.loadAsync(decryptedBuffer);
-                const metaText = await zip.file("metadata.json").async("string");
-                const metadata = JSON.parse(metaText);
-
-                // 1. 清空目前的暫存資料
-                currentStagedFiles = [];
-                metaFieldsContainer.innerHTML = '';
-
-                // 2. 載入元數據
-                const infoData = metadata.info || {};
-                for (const [k, v] of Object.entries(infoData)) {
-                    addMetadataField(k, v);
-                }
-
-                // 3. 載入媒體檔案
-                const mediaItems = metadata.media || [];
-                setEncStatus(`Loading ${mediaItems.length} media items...`);
-
-                for (const item of mediaItems) {
-                    if (item.type === 'motion_photo') {
-                        // 動態照片需要將圖檔與影片二進位資料重新拼接回單一檔案，以便後續 split 邏輯處理
-                        const imgUint8 = await zip.file(item.image).async("uint8array");
-                        const vidUint8 = await zip.file(item.video).async("uint8array");
-                        
-                        const combined = new Uint8Array(imgUint8.length + vidUint8.length);
-                        combined.set(imgUint8, 0);
-                        combined.set(vidUint8, imgUint8.length);
-
-                        currentStagedFiles.push({
-                            name: item.image,
-                            data: combined
-                        });
-                    } else if (item.type === 'image') {
-                        const data = await zip.file(item.image).async("uint8array");
-                        currentStagedFiles.push({ name: item.image, data });
-                    } else if (item.type === 'video') {
-                        const data = await zip.file(item.video).async("uint8array");
-                        currentStagedFiles.push({ name: item.video, data });
-                    } else if (item.type === 'audio') {
-                        const data = await zip.file(item.audio).async("uint8array");
-                        currentStagedFiles.push({ name: item.audio, data });
-                    }
-                }
-
-                refreshStagedMediaList();
-                setEncStatus("Imported successfully! You can now edit files and fields below.");
-                alert("Capsule loaded successfully! Metadata and files have been filled below for editing.");
-
-            } catch (error) {
-                console.error(error);
-                setEncStatus("Failed to import: check password or file integrity.", true);
-                alert("Import failed. Please ensure the password is correct.");
-            } finally {
-                event.target.value = ''; // 重設 input 狀態
-            }
-        }
-
-        // --- 動態照片分裂 binary 演算法 (同 Python split_motion_photo 邏輯移植) ---
-        function splitMotionPhoto(fileBytes) {
-            const decoder = new TextDecoder('latin1');
-            const text = decoder.decode(fileBytes);
-            
-            // 嘗試尋找 MicroVideoOffset
-            const match = text.match(/MicroVideoOffset[=">]+(\d+)/);
-            if (match) {
-                const offset = parseInt(match[1], 10);
-                if (offset > 0 && offset < fileBytes.length) {
-                    const splitPoint = fileBytes.length - offset;
-                    // 確認附近是否有 ftyp 標頭
-                    const segment = fileBytes.subarray(splitPoint, splitPoint + 16);
-                    const segmentText = decoder.decode(segment);
-                    if (segmentText.includes('ftyp')) {
-                        return {
-                            image: fileBytes.subarray(0, splitPoint),
-                            video: fileBytes.subarray(splitPoint)
-                        };
-                    }
-                }
-            }
-
-            // 備用尋找邏輯：搜尋 ftyp 標記
-            for (let i = 4; i < fileBytes.length - 4; i++) {
-                // 'f' 't' 'y' 'p' 的 ASCII 代碼
-                if (fileBytes[i] === 102 && fileBytes[i+1] === 116 && fileBytes[i+2] === 121 && fileBytes[i+3] === 112) {
-                    const boxSize = (fileBytes[i-4] << 24) | (fileBytes[i-3] << 16) | (fileBytes[i-2] << 8) | fileBytes[i-1];
-                    if (boxSize >= 8 && boxSize <= 100) {
-                        const splitPoint = i - 4;
-                        // 檢查 splitPoint 往前 512 bytes 內是否有 JPEG 結尾符 \xff\xd9
-                        const checkStart = Math.max(0, splitPoint - 512);
-                        let hasEoi = false;
-                        for (let j = checkStart; j < splitPoint - 1; j++) {
-                            if (fileBytes[j] === 0xff && fileBytes[j+1] === 0xd9) {
-                                hasEoi = true;
-                                break;
-                            }
-                        }
-                        if (hasEoi) {
-                            return {
-                                image: fileBytes.subarray(0, splitPoint),
-                                video: fileBytes.subarray(splitPoint)
-                            };
-                        }
-                    }
-                }
-            }
-
-            return { image: fileBytes, video: null };
-        }
-
-        function setEncStatus(msg, isError = false) {
-            const statusEl = document.getElementById('encStatusMsg');
-            statusEl.textContent = msg; statusEl.style.color = isError ? 'red' : 'dimgray';
-        }
-
-        // --- 加密打包執行核心 ---
-        async function processAndEncrypt() {
-            const password = document.getElementById('encPasswordInput').value;
-            if (currentStagedFiles.length === 0) {
-                setEncStatus("Please add at least one media file first.", true); return;
-            }
-            if (!password) {
-                setEncStatus("Please enter an encryption password.", true); return;
-            }
-
-            try {
-                setEncStatus("Packing files into ZIP...");
-                const zip = new JSZip();
-                const mediaMeta = [];
-
-                // 收集元數據
-                const infoData = {};
-                const rows = metaFieldsContainer.querySelectorAll('.meta-editor-row');
-                rows.forEach(row => {
-                    const inputs = row.querySelectorAll('input');
-                    const k = inputs[0].value.trim();
-                    const v = inputs[1].value.trim();
-                    if (k) infoData[k] = v;
-                });
-
-                // 處理所有暫存媒體
-                for (let idx = 0; idx < currentStagedFiles.length; idx++) {
-                    const item = currentStagedFiles[idx];
-                    const ext = '.' + item.name.split('.').pop().toLowerCase();
-
-                    // A組: 常規圖片格式 (可能會是動態照片)
-                    if (['.jpg', '.jpeg', '.heic', '.heif', '.gif'].includes(ext)) {
-                        const splitResult = splitMotionPhoto(item.data);
-                        const imgName = `media_${idx}${ext}`;
-                        zip.file(imgName, splitResult.image);
-
-                        if (splitResult.video) {
-                            const vidName = `media_${idx}.mp4`;
-                            zip.file(vidName, splitResult.video);
-                            mediaMeta.push({ type: "motion_photo", image: imgName, video: vidName });
-                        } else {
-                            mediaMeta.push({ type: "image", image: imgName });
-                        }
-                    }
-                    // B組: 其他不支援動態相片的圖片
-                    else if (['.png', '.webp'].includes(ext)) {
-                        const imgName = `media_${idx}${ext}`;
-                        zip.file(imgName, item.data);
-                        mediaMeta.push({ type: "image", image: imgName });
-                    }
-                    // C組: 影片
-                    else if (['.mp4', '.mov'].includes(ext)) {
-                        const vidName = `media_${idx}${ext}`;
-                        zip.file(vidName, item.data);
-                        mediaMeta.push({ type: "video", video: vidName });
-                    }
-                    // D組: 音訊
-                    else if (['.mp3', '.wav'].includes(ext)) {
-                        const audName = `media_${idx}${ext}`;
-                        zip.file(audName, item.data);
-                        mediaMeta.push({ type: "audio", audio: audName });
-                    }
-                }
-
-                // 寫入 metadata.json
-                const fullMeta = { info: infoData, media: mediaMeta };
-                const encJson = new TextEncoder().encode(JSON.stringify(fullMeta));
-                zip.file("metadata.json", encJson);
-
-                // 產生壓縮檔 ArrayBuffer
-                const zipBlob = await zip.generateAsync({ type: "blob" });
-                const zipBuffer = await zipBlob.arrayBuffer();
-
-                setEncStatus("Deriving encryption key (PBKDF2)...");
-                const salt = crypto.getRandomValues(new Uint8Array(16));
-                const nonce = crypto.getRandomValues(new Uint8Array(12));
-
-                const txtEnc = new TextEncoder();
-                const keyMaterial = await crypto.subtle.importKey(
-                    "raw", txtEnc.encode(password), { name: "PBKDF2" }, false, ["deriveKey"]
-                );
-                const aesKey = await crypto.subtle.deriveKey(
-                    { name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" },
-                    keyMaterial, { name: "AES-GCM", length: 256 }, false, ["encrypt"]
-                );
-
-                setEncStatus("Encrypting archive (AES-GCM)...");
-                const ciphertextBuffer = await crypto.subtle.encrypt(
-                    { name: "AES-GCM", iv: nonce }, aesKey, zipBuffer
-                );
-
-                setEncStatus("Packaging final artifact...");
-                
-                // 合併 Salt (16 bytes) + Nonce (12 bytes) + Ciphertext
-                const finalBuffer = new Uint8Array(salt.length + nonce.length + ciphertextBuffer.byteLength);
-                finalBuffer.set(salt, 0);
-                finalBuffer.set(nonce, salt.length);
-                finalBuffer.set(new Uint8Array(ciphertextBuffer), salt.length + nonce.length);
-
-                // 觸發下載
-                const outBlob = new Blob([finalBuffer], { type: "application/octet-stream" });
-                const downloadUrl = URL.createObjectURL(outBlob);
-                const downloadLink = document.createElement('a');
-                
-                // 取用 Title 欄位作為下載檔案的名稱
-				let saveTitle = "archive";
-				if (infoData["Title"]) {
-					// 1. 過濾作業系統不允許的非法檔名字元 \ / : * ? " < > | 以及控制字元
-					let sanitized = infoData["Title"].replace(/[\\/:*?"<>|\x00-\x1f\x7f]/g, '_').trim();
-					// 2. 避免檔名尾端的空格或句點（這在 Windows 系統中可能會造成錯誤）
-					sanitized = sanitized.replace(/[\s.]+$/, '');
-					
-					if (sanitized.length > 0) {
-						saveTitle = sanitized;
-					}
-				}
-                downloadLink.href = downloadUrl;
-                downloadLink.download = `${saveTitle}.jcap`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-
-                setEncStatus("Archive created and downloaded successfully!");
-                alert("Capsule created successfully! Your download should start automatically.");
-                
-            } catch (error) {
-                console.error(error);
-                setEncStatus(`Packaging failed: ${error.message}`, true);
-            }
-        }
-    </script>
-</body>
-</html>
+      }
+    }
+    await w.close();
+    try{sessionStorage.removeItem(SAVE_DEBUG_KEY)}catch{}
+    setCapsuleName(handle.name||suggestedName);
+    status('JCAP v2 建立完成。');
+    console.info('[JCAP debug] 寫入完成',{totalBytes,totalChunks,elapsedSeconds:((performance.now()-started)/1000).toFixed(1)});
+  }catch(error){
+    await w.abort().catch(()=>{});
+    storeSaveDebug({...checkpoint(),stage:'error',errorName:error?.name||'Error',errorMessage:error?.message||String(error)});
+    console.error('[JCAP debug] 寫入中止',{...checkpoint(),errorName:error?.name,errorMessage:error?.message,error});
+    throw error;
+  }
+}
+function classify(n,type=''){return /\.(mp4|mov|webm|m4v|mkv|avi|wmv|mpeg|mpg)$/i.test(n)||type.startsWith('video/')?'video':/\.(mp3|wav|m4a|aac|flac|ogg|opus|wma)$/i.test(n)||type.startsWith('audio/')?'audio':'image'}
+$('save').onclick=async()=>{try{if(!entries.length)throw Error('請先加入至少一個媒體檔');$('save').disabled=true;await saveCapsule()}catch(e){status(`建立失敗：${e.message}`)}finally{$('save').disabled=false}};
+render();recoverSaveDebug();refreshStorageCapability();cleanupOpfsBeforeCapsuleLoad();
+</script></body></html>
